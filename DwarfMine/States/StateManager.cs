@@ -1,6 +1,7 @@
 ﻿using DwarfMine.Graphics;
 using DwarfMine.Managers;
 using DwarfMine.States.StateImplementation.Game;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -108,7 +109,7 @@ namespace DwarfMine.States
             }
         }
 
-        public void Update(double time)
+        public void Update(GameTime time)
         {
             if (_currentGameState.HasValue)
             {
@@ -116,11 +117,11 @@ namespace DwarfMine.States
             }
         }
 
-        public void Draw(CustomSpriteBatch spritebatch)
+        public void Draw(GameTime time, CustomSpriteBatch spritebatch)
         {
             if (_currentGameState.HasValue)
             {
-                _gameStates[_currentGameState.Value].Draw(spritebatch);
+                _gameStates[_currentGameState.Value].Draw(time, spritebatch);
             }
         }
     }

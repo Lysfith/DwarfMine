@@ -1,5 +1,6 @@
 ﻿using DwarfMine.Graphics;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,7 @@ namespace DwarfMine.Managers
 
         public GraphicsDevice GraphicsDevice { get; private set; }
         public CustomSpriteBatch SpriteBatch { get; private set; }
+        public OrthographicCamera Camera { get; private set; }
 
         public GraphicManager()
         {
@@ -38,6 +40,11 @@ namespace DwarfMine.Managers
             GraphicsDevice = device;
 
             SpriteBatch = new CustomSpriteBatch(GraphicsDevice);
+        }
+
+        public void SetCamera(OrthographicCamera camera)
+        {
+            Camera = camera;
         }
     }
 }

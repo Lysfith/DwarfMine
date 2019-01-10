@@ -1,4 +1,5 @@
 ﻿using DwarfMine.Graphics;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace DwarfMine.States
         void End();
         void Pause();
         void Resume();
-        void Update(double time);
-        void Draw(CustomSpriteBatch spritebatch);
+        void Update(GameTime time);
+        void Draw(GameTime time, CustomSpriteBatch spritebatch);
     }
 }

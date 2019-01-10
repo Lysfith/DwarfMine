@@ -13,23 +13,14 @@ namespace DwarfMine
 {
     public class GameMain : GameBase
     {
-        private OrthographicCamera _camera;
-        private CustomSpriteBatch _spriteBatch;
-
         public GameMain()
         {
         }
 
         protected override void RegisterDependencies(ContainerBuilder builder)
         {
-            _camera = new OrthographicCamera(GraphicsDevice);
-
-            _spriteBatch = new CustomSpriteBatch(GraphicsDevice);
-
             GraphicManager.Instance.SetGraphicsDevice(GraphicsDevice);
-
-            builder.RegisterInstance(_spriteBatch);
-            builder.RegisterInstance(_camera);
+            GraphicManager.Instance.SetCamera(new OrthographicCamera(GraphicsDevice));
         }
 
         protected override void LoadContent()
@@ -48,7 +39,7 @@ namespace DwarfMine
         {
             DebugGame.StartUpdate();
 
-            StateManager.Instance.Update(gameTime.ElapsedGameTime.TotalSeconds);
+            StateManager.Instance.Update(gameTime);
 
             DebugGame.StopUpdate();
 
@@ -61,7 +52,7 @@ namespace DwarfMine
 
             DebugGame.StartDraw();
 
-            StateManager.Instance.Draw(GraphicManager.Instance.SpriteBatch);
+            StateManager.Instance.Draw(gameTime, GraphicManager.Instance.SpriteBatch);
 
             DebugGame.StopDraw();
 
