@@ -32,16 +32,24 @@ namespace DwarfMine
 
             TextureManager.Instance.SetContentManager(Content);
 
+#if DEBUG
+            DebugGame.SetFont(FontManager.Instance.GetFont("Arial-16"));
+#endif
+
             StateManager.Instance.SetGameState(EnumGameState.Game);
         }
 
         protected override void Update(GameTime gameTime)
         {
+#if DEBUG
             DebugGame.StartUpdate();
+#endif
 
             StateManager.Instance.Update(gameTime);
 
+#if DEBUG
             DebugGame.StopUpdate();
+#endif
 
             base.Update(gameTime);
         }
@@ -50,13 +58,17 @@ namespace DwarfMine
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
+#if DEBUG
             DebugGame.StartDraw();
+#endif
 
             StateManager.Instance.Draw(gameTime, GraphicManager.Instance.SpriteBatch);
 
+#if DEBUG
             DebugGame.StopDraw();
 
-            DebugGame.Draw(GraphicManager.Instance.SpriteBatch, FontManager.Instance.GetFont("Arial-16"));
+            DebugGame.Draw(GraphicManager.Instance.SpriteBatch);
+#endif
 
             base.Draw(gameTime);
         }

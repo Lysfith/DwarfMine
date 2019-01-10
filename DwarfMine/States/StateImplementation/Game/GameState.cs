@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
 using MonoGame.Extended;
 using MonoGame.Extended.Entities;
+using MonoGame.Extended.Input.InputListeners;
 using MonoGame.Extended.Tiled;
 using MonoGame.Extended.Tiled.Renderers;
 using System;
@@ -23,6 +24,8 @@ namespace DwarfMine.States.StateImplementation.Game
         private SpriteFont _font;
         private World _world;
         private EntityFactory _entityFactory;
+        private KeyboardListener _keyboardListener;
+        private MouseListener _mouseListener;
 
         public GameState()
         {
@@ -42,11 +45,30 @@ namespace DwarfMine.States.StateImplementation.Game
 
             var camera = GraphicManager.Instance.Camera;
 
+            camera.MinimumZoom = 0.5f;
+            camera.MaximumZoom = 3f;
+
             camera.LookAt(Vector2.Zero);
 
-            for (int y = 0; y < 10; y++)
+            _keyboardListener = new KeyboardListener();
+            _keyboardListener.KeyTyped += KeyTyped;
+            _keyboardListener.KeyPressed += KeyPressed;
+            _keyboardListener.KeyReleased += KeyReleased;
+
+            _mouseListener = new MouseListener();
+            _mouseListener.MouseClicked += MouseClicked;
+            _mouseListener.MouseDoubleClicked += MouseDoubleClicked;
+            _mouseListener.MouseDown += MouseDown;
+            _mouseListener.MouseDrag += MouseDrag;
+            _mouseListener.MouseDragEnd += MouseDragEnd;
+            _mouseListener.MouseDragStart += MouseDragStart;
+            _mouseListener.MouseMoved += MouseMoved;
+            _mouseListener.MouseUp += MouseUp;
+            _mouseListener.MouseWheelMoved += MouseWheelMoved;
+
+            for (int y = 0; y < 100; y++)
             {
-                for (int x = 0; x < 10; x++)
+                for (int x = 0; x < 100; x++)
                 {
                     _entityFactory.CreateTile(new Vector2(x * Constants.TILE_WIDTH, y * Constants.TILE_HEIGHT));
                 }
@@ -70,16 +92,104 @@ namespace DwarfMine.States.StateImplementation.Game
 
         public void Update(GameTime time)
         {
-            //_renderer.Update(time);
+            _keyboardListener.Update(time);
+            _mouseListener.Update(time);
 
             _world.Update(time);
         }
 
         public void Draw(GameTime time, CustomSpriteBatch spritebatch)
         {
-            //_renderer.Draw(_camera.GetViewMatrix());
-
             _world.Draw(time);
         }
+
+        #region Inputs
+        private void KeyPressed(object sender, KeyboardEventArgs args)
+        {
+
+        }
+
+        private void KeyReleased(object sender, KeyboardEventArgs args)
+        {
+
+        }
+
+        private void KeyTyped(object sender, KeyboardEventArgs args)
+        {
+
+        }
+
+        private void MouseClicked(object sender, MouseEventArgs args)
+        {
+
+        }
+
+        private void MouseDoubleClicked(object sender, MouseEventArgs args)
+        {
+
+        }
+
+        private void MouseDown(object sender, MouseEventArgs args)
+        {
+
+        }
+
+        private void MouseDrag(object sender, MouseEventArgs args)
+        {
+            var distance = args.DistanceMoved;
+
+            var camera = GraphicManager.Instance.Camera;
+
+            camera.Move(-distance / camera.Zoom);
+        }
+
+        private void MouseDragEnd(object sender, MouseEventArgs args)
+        {
+
+        }
+
+        private void MouseDragStart(object sender, MouseEventArgs args)
+        {
+
+        }
+
+        private void MouseMoved(object sender, MouseEventArgs args)
+        {
+
+        }
+
+        private void MouseUp(object sender, MouseEventArgs args)
+        {
+
+        }
+
+        private void MouseWheelMoved(object sender, MouseEventArgs args)
+        {
+            var camera = GraphicManager.Instance.Camera;
+
+            if (args.ScrollWheelDelta > 0)
+            {
+                float value = 1;
+
+                if (camera.Zoom < 1)
+                {
+                    value = 0.1f;
+                }
+
+                camera.ZoomIn(value);
+            }
+            else
+            {
+                float value = 1;
+
+                if(camera.Zoom <= 1)
+                {
+                    value = 0.1f;
+                }
+
+                camera.ZoomOut(value);
+            }
+        }
+        #endregion
     }
 }

@@ -17,6 +17,8 @@ namespace DwarfMine.Managers
         private static Stopwatch _swUpdate;
         private static Stopwatch _swDraw;
 
+        private static SpriteFont _font;
+
         public static void Log(string classe, string methode, string message)
         {
 #if DEBUG
@@ -24,37 +26,42 @@ namespace DwarfMine.Managers
 #endif
         }
 
-//        public static void StartFpsCounter()
-//        {
-//#if true
-//            if (_swFps != null)
-//            {
-//                if (_swFps.IsRunning)
-//                {
-//                    _swFps.Restart();
-//                }
-//                else
-//                {
-//                    _swFps.Start();
-//                }
-//            }
-//            else
-//            {
-//                _swFps = new Stopwatch();
-//                _swFps.Start();
-//            }
-//#endif
-//        }
+        //        public static void StartFpsCounter()
+        //        {
+        //#if true
+        //            if (_swFps != null)
+        //            {
+        //                if (_swFps.IsRunning)
+        //                {
+        //                    _swFps.Restart();
+        //                }
+        //                else
+        //                {
+        //                    _swFps.Start();
+        //                }
+        //            }
+        //            else
+        //            {
+        //                _swFps = new Stopwatch();
+        //                _swFps.Start();
+        //            }
+        //#endif
+        //        }
 
-//        public static void StopFpsCounter()
-//        {
-//#if DEBUG
-//            if (_swFps != null && _swFps.IsRunning)
-//            {
-//                _swFps.Stop();
-//            }
-//#endif
-//        }
+        //        public static void StopFpsCounter()
+        //        {
+        //#if DEBUG
+        //            if (_swFps != null && _swFps.IsRunning)
+        //            {
+        //                _swFps.Stop();
+        //            }
+        //#endif
+        //        }
+
+        public static void SetFont(SpriteFont font)
+        {
+            _font = font;
+        }
 
 
         public static void StartUpdate()
@@ -68,7 +75,7 @@ namespace DwarfMine.Managers
                 }
                 else
                 {
-                    _swUpdate.Start();
+                    _swUpdate.Restart();
                 }
             }
             else
@@ -101,7 +108,7 @@ namespace DwarfMine.Managers
                 }
                 else
                 {
-                    _swDraw.Start();
+                    _swDraw.Restart();
                 }
             }
             else
@@ -123,14 +130,14 @@ namespace DwarfMine.Managers
 #endif
         }
 
-        public static void Draw(CustomSpriteBatch spritebatch, SpriteFont font)
+        public static void Draw(CustomSpriteBatch spritebatch)
         {
 #if DEBUG
             spritebatch.Begin();
 
-            spritebatch.DrawString(font, $"Update : {_updateTime.ToString("0000")} ms", new Vector2(10, 10), Color.Yellow);
-            spritebatch.DrawString(font, $"Draw : {_drawTime.ToString("0000")} ms", new Vector2(10, 30), Color.Yellow);
-            spritebatch.DrawString(font, $"DrawCalls : {spritebatch.DrawCallsCount}", new Vector2(10, 50), Color.Yellow);
+            spritebatch.DrawString(_font, $"Update : {_updateTime.ToString("0000")} ms", new Vector2(10, 10), Color.Yellow);
+            spritebatch.DrawString(_font, $"Draw : {_drawTime.ToString("0000")} ms", new Vector2(10, 30), Color.Yellow);
+            spritebatch.DrawString(_font, $"DrawCalls : {spritebatch.DrawCallsCount}", new Vector2(10, 50), Color.Yellow);
 
             spritebatch.End();
 #endif
