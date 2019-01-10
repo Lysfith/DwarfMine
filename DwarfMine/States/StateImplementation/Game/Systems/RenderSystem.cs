@@ -7,6 +7,8 @@ using MonoGame.Extended.Entities.Systems;
 using MonoGame.Extended.Sprites;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Text;
 
 namespace DwarfMine.States.StateImplementation.Game.Systems
@@ -35,13 +37,20 @@ namespace DwarfMine.States.StateImplementation.Game.Systems
         {
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: _camera.GetViewMatrix());
 
+            var rectangle = _camera.BoundingRectangle;
+
             foreach (var entity in ActiveEntities)
             {
-                var sprite = _spriteMapper.Get(entity);
                 var transform = _transforMapper.Get(entity);
 
-                _spriteBatch.Draw(sprite, transform);
+                var rectangleSprite = new RectangleF(transform.Position.X - Constants.TILE_WIDTH * 0.5f, transform.Position.Y - Constants.TILE_HEIGHT * 0.5f, Constants.TILE_WIDTH, Constants.TILE_HEIGHT); 
 
+                if (rectangle.Intersects(rectangleSprite))
+                {
+                    var sprite = _spriteMapper.Get(entity);
+
+                    _spriteBatch.Draw(sprite, transform);
+                }
             }
 
             _spriteBatch.End();
