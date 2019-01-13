@@ -1,5 +1,6 @@
 ﻿using DwarfMine.Graphics;
 using DwarfMine.Managers;
+using DwarfMine.States.StateImplementation.Game.Components;
 using DwarfMine.States.StateImplementation.Game.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -27,6 +28,8 @@ namespace DwarfMine.States.StateImplementation.Game
         private KeyboardListener _keyboardListener;
         private MouseListener _mouseListener;
 
+        private Map _map;
+
         public GameState()
         {
             _font = FontManager.Instance.GetFont("Arial-16");
@@ -38,7 +41,7 @@ namespace DwarfMine.States.StateImplementation.Game
                //.AddSystem(new WorldSystem())
                //.AddSystem(new PlayerSystem())
                //.AddSystem(new EnemySystem())
-               .AddSystem(new RenderSystem(GraphicManager.Instance.SpriteBatch, GraphicManager.Instance.Camera))
+               //.AddSystem(new RenderSystem(GraphicManager.Instance.SpriteBatch, GraphicManager.Instance.Camera))
                .Build();
 
             _entityFactory = new EntityFactory(_world);
@@ -66,13 +69,17 @@ namespace DwarfMine.States.StateImplementation.Game
             _mouseListener.MouseUp += MouseUp;
             _mouseListener.MouseWheelMoved += MouseWheelMoved;
 
-            for (int y = 0; y < 100; y++)
-            {
-                for (int x = 0; x < 100; x++)
-                {
-                    _entityFactory.CreateTile(new Vector2(x * Constants.TILE_WIDTH, y * Constants.TILE_HEIGHT));
-                }
-            }
+            _map = new Map();
+
+            //for (int y = 0; y < 10; y++)
+            //{
+            //    for (int x = 0; x < 10; x++)
+            //    {
+            //       _map.CreateRegion(x, y);
+            //    }
+            //}
+
+            _map.CreateRegion(0, 0);
         }
 
         public void End()
@@ -96,11 +103,15 @@ namespace DwarfMine.States.StateImplementation.Game
             _mouseListener.Update(time);
 
             _world.Update(time);
+
+            _map.Update(time, GraphicManager.Instance.Camera);
         }
 
-        public void Draw(GameTime time, CustomSpriteBatch spritebatch)
+        public void Draw(GameTime time, CustomSpriteBatch spriteBatch)
         {
             _world.Draw(time);
+
+            _map.Draw(time, spriteBatch, GraphicManager.Instance.Camera);
         }
 
         #region Inputs

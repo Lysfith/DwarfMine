@@ -24,20 +24,7 @@ namespace DwarfMine.States.StateImplementation.Game
 
         public Entity CreateTile(Vector2 position)
         {
-            string spriteName = "Textures/Game/tiles";
-            Sprite sprite = null;
-
-            if(!SpriteManager.Instance.Exist(spriteName))
-            {
-                var tileTexture = TextureManager.Instance.GetTexture(spriteName);
-                sprite = new Sprite(tileTexture);
-
-                SpriteManager.Instance.AddOrReplaceSprite(spriteName, sprite);
-            }
-            else
-            {
-                sprite = SpriteManager.Instance.GetSprite(spriteName);
-            }
+            Sprite sprite = SpriteManager.Instance.GetSprite(EnumSprite.GRASS_INNER_TOP_LEFT);
 
             var entity = _world.CreateEntity();
             entity.Attach(new Transform2(position, 0, Vector2.One));

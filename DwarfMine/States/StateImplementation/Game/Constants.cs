@@ -6,7 +6,9 @@ namespace DwarfMine.States.StateImplementation.Game
 {
     public class Constants
     {
-        public const int TILE_WIDTH = 64;
-        public const int TILE_HEIGHT = 64;
+        public const int TILE_WIDTH = 16;
+        public const int TILE_HEIGHT = 16;
+        public const int REGION_TILE_WIDTH = 10;
+        public const int REGION_TILE_HEIGHT = 10;
     }
 }

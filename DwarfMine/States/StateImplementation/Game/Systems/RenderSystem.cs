@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using DwarfMine.Managers;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using MonoGame.Extended.Animations;
@@ -55,5 +56,7 @@ namespace DwarfMine.States.StateImplementation.Game.Systems
 
             _spriteBatch.End();
         }
+
+       
     }
 }

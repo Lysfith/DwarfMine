@@ -32,6 +32,8 @@ namespace DwarfMine
 
             TextureManager.Instance.SetContentManager(Content);
 
+            SpriteManager.Instance.Load();
+
 #if DEBUG
             DebugGame.SetFont(FontManager.Instance.GetFont("Arial-16"));
 #endif
