@@ -27,6 +27,9 @@ namespace DwarfMine.States.StateImplementation.Game
         private EntityFactory _entityFactory;
         private KeyboardListener _keyboardListener;
         private MouseListener _mouseListener;
+        private PrimitiveRectangle _cellDefault;
+        private PrimitiveRectangle _cellHighlight;
+        private Point? _currentCellHovered;
 
         private Map _map;
 
@@ -79,6 +82,9 @@ namespace DwarfMine.States.StateImplementation.Game
                 }
             }
 
+            _cellDefault = new PrimitiveRectangle(PrimitiveRectangle.Type.OUTLINE, Constants.TILE_WIDTH, Constants.TILE_HEIGHT, TextureManager.Instance.GetTexture("blank"), Color.Transparent, Color.White, 1);
+            _cellHighlight = new PrimitiveRectangle(PrimitiveRectangle.Type.OUTLINE, Constants.TILE_WIDTH, Constants.TILE_HEIGHT, TextureManager.Instance.GetTexture("blank"), Color.Transparent, Color.Red, 1);
+
             //_map.CreateRegion(0, 0);
         }
 
@@ -112,6 +118,16 @@ namespace DwarfMine.States.StateImplementation.Game
             _world.Draw(time);
 
             _map.Draw(time, spriteBatch, camera);
+
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: camera.GetViewMatrix());
+
+            if (_currentCellHovered != null)
+            {
+                _cellHighlight.Draw(spriteBatch, _currentCellHovered.Value.X, _currentCellHovered.Value.Y);
+            }
+
+            spriteBatch.End();
+
         }
 
         #region Inputs
@@ -166,7 +182,21 @@ namespace DwarfMine.States.StateImplementation.Game
 
         private void MouseMoved(object sender, MouseEventArgs args)
         {
+            var mousePositionScreen = args.Position;
+            var camera = GraphicManager.Instance.Camera;
 
+            var mousePositionWorld = camera.ScreenToWorld(mousePositionScreen.X, mousePositionScreen.Y);
+
+            var region = _map.GetRegion((int)mousePositionWorld.X, (int)mousePositionWorld.Y);
+
+            if(region != null)
+            {
+                _currentCellHovered = region.GetCellPosition((int)mousePositionWorld.X, (int)mousePositionWorld.Y);
+            }
+            else
+            {
+                _currentCellHovered = null;
+            }
         }
 
         private void MouseUp(object sender, MouseEventArgs args)

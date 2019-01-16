@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using DwarfMine.Managers;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -18,10 +19,14 @@ namespace DwarfMine.Graphics
 
         }
 
+        public void ResetCounter()
+        {
+            DrawCallsCount = 0;
+        }
+
         public new void Begin(SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, Effect effect = null, Matrix? transformMatrix = default(Matrix?))
         {
             base.Begin(sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect, transformMatrix);
-            DrawCallsCount = 0;
         }
 
         public new void Draw(Texture2D texture, Rectangle destinationRectangle, Color color)
@@ -65,6 +70,20 @@ namespace DwarfMine.Graphics
         {
             base.Draw(texture, position, sourceRectangle, color, rotation, origin, scale, effects, layerDepth);
             DrawCallsCount++;
+        }
+
+        public void DrawLine(Vector2 point1, Vector2 point2, Color color, float thickness = 1f)
+        {
+            var distance = Vector2.Distance(point1, point2);
+            var angle = (float)Math.Atan2(point2.Y - point1.Y, point2.X - point1.X);
+            DrawLine(point1, distance, angle, color, thickness);
+        }
+
+        public void DrawLine(Vector2 point, float length, float angle, Color color, float thickness = 1f)
+        {
+            var origin = new Vector2(0f, 0.5f);
+            var scale = new Vector2(length, thickness);
+            Draw(TextureManager.Instance.GetTexture("blank"), point, null, color, angle, origin, scale, SpriteEffects.None, 0);
         }
 
     }

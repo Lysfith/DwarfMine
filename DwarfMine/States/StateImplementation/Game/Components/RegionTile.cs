@@ -33,6 +33,16 @@ namespace DwarfMine.States.StateImplementation.Game.Components
             Tiles[x, y] = type;
         }
 
+        public Point GetCellPosition(int xWorld, int yWorld)
+        {
+            var positionXInRegion = xWorld - X;
+            var positionYInRegion = yWorld - Y;
+
+            return new Point(
+                (int)(positionXInRegion / Constants.TILE_WIDTH) * Constants.TILE_WIDTH + X, 
+                (int)(positionYInRegion / Constants.TILE_HEIGHT) * Constants.TILE_HEIGHT + Y);
+        }
+
         public bool IsIn(Vector2 point)
         {
             return Rectangle.Contains(point);
@@ -63,7 +73,7 @@ namespace DwarfMine.States.StateImplementation.Game.Components
 
             spriteBatch.Begin();
 
-            var sprite = SpriteManager.Instance.GetSprite(EnumSprite.DEV);
+            var sprite = SpriteManager.Instance.GetSprite(EnumSprite.GRASS_INNER_CENTER);
 
             for (int y = 0; y < Constants.REGION_TILE_HEIGHT; y++)
             {

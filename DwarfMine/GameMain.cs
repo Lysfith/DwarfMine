@@ -55,6 +55,8 @@ namespace DwarfMine
 
         protected override void Draw(GameTime gameTime)
         {
+            GraphicManager.Instance.SpriteBatch.ResetCounter();
+
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
 #if DEBUG

@@ -28,6 +28,11 @@ namespace DwarfMine.States.StateImplementation.Game.Components
             _regions.Add($"{x}_{y}", region);
         }
 
+        public RegionTile GetRegion(int xWorld, int yWorld)
+        {
+            return _regions.Where(r => r.Value.Rectangle.Contains(xWorld, yWorld)).Select(r => r.Value).FirstOrDefault();
+        }
+
         public void Update(GameTime time, OrthographicCamera camera)
         {
             var rectangle = camera.BoundingRectangle.ToRectangle();

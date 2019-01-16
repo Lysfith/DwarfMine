@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -59,6 +60,19 @@ namespace DwarfMine.Managers
         public override void Load(ContentManager content)
         {
             _content = content;
+
+            var blank = new Texture2D(GraphicManager.Instance.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
+            blank.SetData(new[] { Color.White });
+
+            AddTexture("blank", blank);
+        }
+
+        private void AddTexture(string name, Texture2D texture)
+        {
+            if (!Exist(name))
+            {
+                _textures.Add(name, texture);
+            }
         }
     }
 }
