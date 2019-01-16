@@ -30,9 +30,9 @@ namespace DwarfMine.States.StateImplementation.Game.Components
 
         public void Update(GameTime time, OrthographicCamera camera)
         {
-            var rectangle = camera.BoundingRectangle;
+            var rectangle = camera.BoundingRectangle.ToRectangle();
 
-            _activeRegions = _regions.Values.ToList();
+            _activeRegions = _regions.Values.Where(r => r.Rectangle.Intersects(rectangle)).ToList();
         }
 
         public void Draw(GameTime time, CustomSpriteBatch spriteBatch, OrthographicCamera camera)

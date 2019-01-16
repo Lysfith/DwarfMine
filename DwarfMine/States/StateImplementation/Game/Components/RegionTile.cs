@@ -63,64 +63,75 @@ namespace DwarfMine.States.StateImplementation.Game.Components
 
             spriteBatch.Begin();
 
-            for(int y = 0; y < Constants.REGION_TILE_HEIGHT; y++)
+            var sprite = SpriteManager.Instance.GetSprite(EnumSprite.DEV);
+
+            for (int y = 0; y < Constants.REGION_TILE_HEIGHT; y++)
             {
                 for (int x = 0; x < Constants.REGION_TILE_WIDTH; x++)
                 {
-                    Sprite sprite = null;
-
-                    if(x % 3 == 0)
-                    {
-                        if (y % 3 == 0)
-                        {
-                            sprite = SpriteManager.Instance.GetSprite(EnumSprite.GRASS_INNER_TOP_LEFT);
-                        }
-                        else if (y % 3 == 1)
-                        {
-                            sprite = SpriteManager.Instance.GetSprite(EnumSprite.GRASS_INNER_LEFT);
-                        }
-                        else if(y % 3 == 2)
-                        {
-                            sprite = SpriteManager.Instance.GetSprite(EnumSprite.GRASS_INNER_BOTTOM_LEFT);
-                        }
-                    }
-                    else if (x % 3 == 1)
-                    {
-                        if (y % 3 == 0)
-                        {
-                            sprite = SpriteManager.Instance.GetSprite(EnumSprite.GRASS_INNER_TOP);
-                        }
-                        else if (y % 3 == 1)
-                        {
-                            sprite = SpriteManager.Instance.GetSprite(EnumSprite.GRASS_INNER_CENTER);
-                        }
-                        else if (y % 3 == 2)
-                        {
-                            sprite = SpriteManager.Instance.GetSprite(EnumSprite.GRASS_INNER_BOTTOM);
-                        }
-                    }
-                    else if (x % 3 == 2)
-                    {
-                        if (y % 3 == 0)
-                        {
-                            sprite = SpriteManager.Instance.GetSprite(EnumSprite.GRASS_INNER_TOP_RIGHT);
-                        }
-                        else if (y % 3 == 1)
-                        {
-                            sprite = SpriteManager.Instance.GetSprite(EnumSprite.GRASS_INNER_RIGHT);
-                        }
-                        else if (y % 3 == 2)
-                        {
-                            sprite = SpriteManager.Instance.GetSprite(EnumSprite.GRASS_INNER_BOTTOM_RIGHT);
-                        }
-                    }
-
-                    if (sprite != null)
-                    {
-                        spriteBatch.Draw(sprite, new Vector2(x * Constants.TILE_WIDTH + Constants.TILE_WIDTH * 0.5f, y * Constants.TILE_HEIGHT + Constants.TILE_HEIGHT * 0.5f));
-                    }
+                    spriteBatch.Draw(sprite, new Vector2(x * Constants.TILE_WIDTH + Constants.TILE_WIDTH * 0.5f, y * Constants.TILE_HEIGHT + Constants.TILE_HEIGHT * 0.5f));
                 }
             }
+
+
+            //for(int y = 0; y < Constants.REGION_TILE_HEIGHT; y++)
+            //{
+            //    for (int x = 0; x < Constants.REGION_TILE_WIDTH; x++)
+            //    {
+            //        Sprite sprite = null;
+
+            //        if(x % 3 == 0)
+            //        {
+            //            if (y % 3 == 0)
+            //            {
+            //                sprite = SpriteManager.Instance.GetSprite(EnumSprite.GRASS_INNER_TOP_LEFT);
+            //            }
+            //            else if (y % 3 == 1)
+            //            {
+            //                sprite = SpriteManager.Instance.GetSprite(EnumSprite.GRASS_INNER_LEFT);
+            //            }
+            //            else if(y % 3 == 2)
+            //            {
+            //                sprite = SpriteManager.Instance.GetSprite(EnumSprite.GRASS_INNER_BOTTOM_LEFT);
+            //            }
+            //        }
+            //        else if (x % 3 == 1)
+            //        {
+            //            if (y % 3 == 0)
+            //            {
+            //                sprite = SpriteManager.Instance.GetSprite(EnumSprite.GRASS_INNER_TOP);
+            //            }
+            //            else if (y % 3 == 1)
+            //            {
+            //                sprite = SpriteManager.Instance.GetSprite(EnumSprite.GRASS_INNER_CENTER);
+            //            }
+            //            else if (y % 3 == 2)
+            //            {
+            //                sprite = SpriteManager.Instance.GetSprite(EnumSprite.GRASS_INNER_BOTTOM);
+            //            }
+            //        }
+            //        else if (x % 3 == 2)
+            //        {
+            //            if (y % 3 == 0)
+            //            {
+            //                sprite = SpriteManager.Instance.GetSprite(EnumSprite.GRASS_INNER_TOP_RIGHT);
+            //            }
+            //            else if (y % 3 == 1)
+            //            {
+            //                sprite = SpriteManager.Instance.GetSprite(EnumSprite.GRASS_INNER_RIGHT);
+            //            }
+            //            else if (y % 3 == 2)
+            //            {
+            //                sprite = SpriteManager.Instance.GetSprite(EnumSprite.GRASS_INNER_BOTTOM_RIGHT);
+            //            }
+            //        }
+
+            //        if (sprite != null)
+            //        {
+            //            spriteBatch.Draw(sprite, new Vector2(x * Constants.TILE_WIDTH + Constants.TILE_WIDTH * 0.5f, y * Constants.TILE_HEIGHT + Constants.TILE_HEIGHT * 0.5f));
+            //        }
+            //    }
+            //}
 
             spriteBatch.End();
 
