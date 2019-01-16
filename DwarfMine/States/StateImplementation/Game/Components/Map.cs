@@ -11,24 +11,23 @@ namespace DwarfMine.States.StateImplementation.Game.Components
 {
     public class Map
     {
-        private Dictionary<string, RegionTile> _regions;
-        private List<RegionTile> _activeRegions;
+        private Dictionary<string, Region> _regions;
+        private List<Region> _activeRegions;
 
         public Map()
         {
-            _regions = new Dictionary<string, RegionTile>();
-            _activeRegions = new List<RegionTile>();
+            _regions = new Dictionary<string, Region>();
+            _activeRegions = new List<Region>();
         }
 
         public void CreateRegion(int x, int y)
         {
-            var region = new RegionTile(x, y);
-            region.Apply();
+            var region = new Region(x, y);
 
             _regions.Add($"{x}_{y}", region);
         }
 
-        public RegionTile GetRegion(int xWorld, int yWorld)
+        public Region GetRegion(int xWorld, int yWorld)
         {
             return _regions.Where(r => r.Value.Rectangle.Contains(xWorld, yWorld)).Select(r => r.Value).FirstOrDefault();
         }
@@ -37,7 +36,25 @@ namespace DwarfMine.States.StateImplementation.Game.Components
         {
             var rectangle = camera.BoundingRectangle.ToRectangle();
 
+            _activeRegions.Clear();
+
             _activeRegions = _regions.Values.Where(r => r.Rectangle.Intersects(rectangle)).ToList();
+
+            foreach(var region in _regions)
+            {
+                region.Value.Update(time);
+
+                if(region.Value.Rectangle.Intersects(rectangle))
+                {
+                    _activeRegions.Add(region.Value);
+
+                    region.Value.SetVisible(true);
+                }
+                else
+                {
+                    region.Value.SetVisible(false);
+                }
+            }
         }
 
         public void Draw(GameTime time, CustomSpriteBatch spriteBatch, OrthographicCamera camera)

@@ -27,7 +27,6 @@ namespace DwarfMine.States.StateImplementation.Game
         private EntityFactory _entityFactory;
         private KeyboardListener _keyboardListener;
         private MouseListener _mouseListener;
-        private PrimitiveRectangle _cellDefault;
         private PrimitiveRectangle _cellHighlight;
         private Point? _currentCellHovered;
 
@@ -82,7 +81,6 @@ namespace DwarfMine.States.StateImplementation.Game
                 }
             }
 
-            _cellDefault = new PrimitiveRectangle(PrimitiveRectangle.Type.OUTLINE, Constants.TILE_WIDTH, Constants.TILE_HEIGHT, TextureManager.Instance.GetTexture("blank"), Color.Transparent, Color.White, 1);
             _cellHighlight = new PrimitiveRectangle(PrimitiveRectangle.Type.OUTLINE, Constants.TILE_WIDTH, Constants.TILE_HEIGHT, TextureManager.Instance.GetTexture("blank"), Color.Transparent, Color.Red, 1);
 
             //_map.CreateRegion(0, 0);
