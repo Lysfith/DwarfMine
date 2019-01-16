@@ -1,5 +1,6 @@
 ﻿using DwarfMine.States.StateImplementation.Game;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Sprites;
 using MonoGame.Extended.TextureAtlases;
@@ -10,7 +11,7 @@ using System.Text;
 
 namespace DwarfMine.Managers
 {
-    public class SpriteManager
+    public class SpriteManager : BaseManager
     {
         private static SpriteManager _instance;
 
@@ -61,7 +62,7 @@ namespace DwarfMine.Managers
             }
         }
 
-        public void Load()
+        public override void Load(ContentManager content)
         {
             var directory = "Textures/Game/";
 

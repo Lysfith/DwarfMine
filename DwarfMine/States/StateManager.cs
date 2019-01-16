@@ -1,7 +1,9 @@
 ﻿using DwarfMine.Graphics;
 using DwarfMine.Managers;
 using DwarfMine.States.StateImplementation.Game;
+using DwarfMine.Utils;
 using Microsoft.Xna.Framework;
+using MonoGame.Extended;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -91,37 +93,41 @@ namespace DwarfMine.States
 
             if (stateHasChanged)
             {
+#if DEBUG
                 DebugGame.Log(
                     nameof(StateManager),
                     nameof(SetGameState),
                     string.Format("L'état du jeu a été modifié ! ({0} => {1})",
                     _currentGameState, gameState));
+#endif
 
                 this._currentGameState = gameState;
             }
             else
             {
+#if DEBUG
                 DebugGame.Log(
                     nameof(StateManager),
                     nameof(SetGameState),
                     string.Format("L'état du jeu n'a pas pu être modifié ! ({0} => {1})",
                     _currentGameState, gameState));
+#endif
             }
         }
 
-        public void Update(GameTime time)
+        public void Update(GameTime time, OrthographicCamera camera)
         {
             if (_currentGameState.HasValue)
             {
-                _gameStates[_currentGameState.Value].Update(time);
+                _gameStates[_currentGameState.Value].Update(time, camera);
             }
         }
 
-        public void Draw(GameTime time, CustomSpriteBatch spritebatch)
+        public void Draw(GameTime time, CustomSpriteBatch spritebatch, OrthographicCamera camera)
         {
             if (_currentGameState.HasValue)
             {
-                _gameStates[_currentGameState.Value].Draw(time, spritebatch);
+                _gameStates[_currentGameState.Value].Draw(time, spritebatch, camera);
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using DwarfMine.Graphics;
 using Microsoft.Xna.Framework;
+using MonoGame.Extended;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace DwarfMine.States
         void End();
         void Pause();
         void Resume();
-        void Update(GameTime time);
-        void Draw(GameTime time, CustomSpriteBatch spritebatch);
+        void Update(GameTime time, OrthographicCamera camera);
+        void Draw(GameTime time, CustomSpriteBatch spritebatch, OrthographicCamera camera);
     }
 }

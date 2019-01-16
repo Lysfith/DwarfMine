@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DwarfMine.Managers
+namespace DwarfMine.Utils
 {
     public class PerlinNoise
     {

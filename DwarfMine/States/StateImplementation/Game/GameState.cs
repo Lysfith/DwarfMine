@@ -32,7 +32,7 @@ namespace DwarfMine.States.StateImplementation.Game
 
         public GameState()
         {
-            _font = FontManager.Instance.GetFont("Arial-16");
+            _font = AssetManager.Instance.MainFont;
         }
 
         public void Start()
@@ -71,15 +71,15 @@ namespace DwarfMine.States.StateImplementation.Game
 
             _map = new Map();
 
-            //for (int y = 0; y < 10; y++)
-            //{
-            //    for (int x = 0; x < 10; x++)
-            //    {
-            //       _map.CreateRegion(x, y);
-            //    }
-            //}
+            for (int y = 0; y < 10; y++)
+            {
+                for (int x = 0; x < 10; x++)
+                {
+                    _map.CreateRegion(x, y);
+                }
+            }
 
-            _map.CreateRegion(0, 0);
+            //_map.CreateRegion(0, 0);
         }
 
         public void End()
@@ -97,21 +97,21 @@ namespace DwarfMine.States.StateImplementation.Game
 
         }
 
-        public void Update(GameTime time)
+        public void Update(GameTime time, OrthographicCamera camera)
         {
             _keyboardListener.Update(time);
             _mouseListener.Update(time);
 
             _world.Update(time);
 
-            _map.Update(time, GraphicManager.Instance.Camera);
+            _map.Update(time, camera);
         }
 
-        public void Draw(GameTime time, CustomSpriteBatch spriteBatch)
+        public void Draw(GameTime time, CustomSpriteBatch spriteBatch, OrthographicCamera camera)
         {
             _world.Draw(time);
 
-            _map.Draw(time, spriteBatch, GraphicManager.Instance.Camera);
+            _map.Draw(time, spriteBatch, camera);
         }
 
         #region Inputs

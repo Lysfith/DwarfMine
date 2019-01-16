@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using DwarfMine.Graphics;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using System;
@@ -34,7 +35,7 @@ namespace DwarfMine.States.StateImplementation.Game.Components
             _activeRegions = _regions.Values.ToList();
         }
 
-        public void Draw(GameTime time, SpriteBatch spriteBatch, OrthographicCamera camera)
+        public void Draw(GameTime time, CustomSpriteBatch spriteBatch, OrthographicCamera camera)
         {
             if (_activeRegions.Any())
             {

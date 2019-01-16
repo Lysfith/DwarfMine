@@ -1,4 +1,5 @@
-﻿using DwarfMine.Managers;
+﻿using DwarfMine.Graphics;
+using DwarfMine.Managers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Sprites;
@@ -42,7 +43,7 @@ namespace DwarfMine.States.StateImplementation.Game.Components
             CreateTexture();
         }
 
-        public void Draw(GameTime time, SpriteBatch spriteBatch)
+        public void Draw(GameTime time, CustomSpriteBatch spriteBatch)
         {
             if(Texture != null)
             {
@@ -52,7 +53,7 @@ namespace DwarfMine.States.StateImplementation.Game.Components
 
         private void CreateTexture()
         {
-            var spriteBatch = new SpriteBatch(GraphicManager.Instance.GraphicsDevice);
+            var spriteBatch = new CustomSpriteBatch(GraphicManager.Instance.GraphicsDevice);
             var renderTarget = new RenderTarget2D(GraphicManager.Instance.GraphicsDevice, Width, Height);
 
             GraphicManager.Instance.GraphicsDevice.SetRenderTarget(renderTarget);

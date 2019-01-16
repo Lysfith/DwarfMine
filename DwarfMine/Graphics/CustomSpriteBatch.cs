@@ -10,7 +10,7 @@ namespace DwarfMine.Graphics
 {
     public class CustomSpriteBatch : SpriteBatch
     {
-        public long DrawCallsCount { get; set; }
+        public int DrawCallsCount { get; set; }
 
         public CustomSpriteBatch(GraphicsDevice graphicsDevice)
             : base(graphicsDevice)

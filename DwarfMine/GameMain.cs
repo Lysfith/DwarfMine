@@ -2,6 +2,7 @@
 using DwarfMine.Graphics;
 using DwarfMine.Managers;
 using DwarfMine.States;
+using DwarfMine.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -25,17 +26,13 @@ namespace DwarfMine
 
         protected override void LoadContent()
         {
-            FontManager.Instance.AddFont("Arial-10", Content.Load<SpriteFont>("Fonts/Arial-10"));
-            FontManager.Instance.AddFont("Arial-16", Content.Load<SpriteFont>("Fonts/Arial-16"));
-            FontManager.Instance.AddFont("Arial-24", Content.Load<SpriteFont>("Fonts/Arial-24"));
-            FontManager.Instance.AddFont("Arial-36", Content.Load<SpriteFont>("Fonts/Arial-36"));
-
-            TextureManager.Instance.SetContentManager(Content);
-
-            SpriteManager.Instance.Load();
+            FontManager.Instance.Load(Content);
+            TextureManager.Instance.Load(Content);
+            SpriteManager.Instance.Load(Content);
+            AssetManager.Instance.Load(Content);
 
 #if DEBUG
-            DebugGame.SetFont(FontManager.Instance.GetFont("Arial-16"));
+            DebugGame.SetFont(AssetManager.Instance.MainFont);
 #endif
 
             StateManager.Instance.SetGameState(EnumGameState.Game);
@@ -47,7 +44,7 @@ namespace DwarfMine
             DebugGame.StartUpdate();
 #endif
 
-            StateManager.Instance.Update(gameTime);
+            StateManager.Instance.Update(gameTime, GraphicManager.Instance.Camera);
 
 #if DEBUG
             DebugGame.StopUpdate();
@@ -64,7 +61,7 @@ namespace DwarfMine
             DebugGame.StartDraw();
 #endif
 
-            StateManager.Instance.Draw(gameTime, GraphicManager.Instance.SpriteBatch);
+            StateManager.Instance.Draw(gameTime, GraphicManager.Instance.SpriteBatch, GraphicManager.Instance.Camera);
 
 #if DEBUG
             DebugGame.StopDraw();

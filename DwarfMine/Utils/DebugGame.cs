@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace DwarfMine.Managers
+namespace DwarfMine.Utils
 {
     public class DebugGame
     {
@@ -133,11 +133,13 @@ namespace DwarfMine.Managers
         public static void Draw(CustomSpriteBatch spritebatch)
         {
 #if DEBUG
+            var drawCount = spritebatch.DrawCallsCount;
+
             spritebatch.Begin();
 
             spritebatch.DrawString(_font, $"Update : {_updateTime.ToString("0000")} ms", new Vector2(10, 10), Color.Yellow);
             spritebatch.DrawString(_font, $"Draw : {_drawTime.ToString("0000")} ms", new Vector2(10, 30), Color.Yellow);
-            spritebatch.DrawString(_font, $"DrawCalls : {spritebatch.DrawCallsCount}", new Vector2(10, 50), Color.Yellow);
+            spritebatch.DrawString(_font, $"DrawCalls : {drawCount}", new Vector2(10, 50), Color.Yellow);
 
             spritebatch.End();
 #endif

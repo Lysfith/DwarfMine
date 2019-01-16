@@ -8,7 +8,7 @@ using System.Text;
 
 namespace DwarfMine.Managers
 {
-    public class TextureManager
+    public class TextureManager : BaseManager
     {
         private static TextureManager _instance;
 
@@ -34,11 +34,6 @@ namespace DwarfMine.Managers
             _textures = new Dictionary<string, Texture2D>();
         }
 
-        public void SetContentManager(ContentManager content)
-        {
-            _content = content;
-        }
-
         public bool Exist(string name)
         {
             return _textures.ContainsKey(name);
@@ -59,6 +54,11 @@ namespace DwarfMine.Managers
             }
 
             return texture;
+        }
+
+        public override void Load(ContentManager content)
+        {
+            _content = content;
         }
     }
 }
