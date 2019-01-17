@@ -1,7 +1,6 @@
 ﻿using DwarfMine.Graphics;
 using DwarfMine.Managers;
 using DwarfMine.States.StateImplementation.Game.Components;
-using DwarfMine.States.StateImplementation.Game.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -23,8 +22,6 @@ namespace DwarfMine.States.StateImplementation.Game
     class GameState : IState
     {
         private SpriteFont _font;
-        private World _world;
-        private EntityFactory _entityFactory;
         private KeyboardListener _keyboardListener;
         private MouseListener _mouseListener;
         private PrimitiveRectangle _cellHighlight;
@@ -39,18 +36,9 @@ namespace DwarfMine.States.StateImplementation.Game
 
         public void Start()
         {
-            _world = new WorldBuilder()
-               //.AddSystem(new WorldSystem())
-               //.AddSystem(new PlayerSystem())
-               //.AddSystem(new EnemySystem())
-               .AddSystem(new RenderSystem(GraphicManager.Instance.SpriteBatch, GraphicManager.Instance.Camera))
-               .Build();
-
-            _entityFactory = new EntityFactory(_world);
-
             var camera = GraphicManager.Instance.Camera;
 
-            camera.MinimumZoom = 0.5f;
+            camera.MinimumZoom = 1f;
             camera.MaximumZoom = 3f;
 
             camera.LookAt(Vector2.Zero);
@@ -83,17 +71,17 @@ namespace DwarfMine.States.StateImplementation.Game
 
             var random = new Random();
 
-            for (int i = 0; i < 10000; i++)
+            for (int i = 0; i < 1000; i++)
             {
                 int x = random.Next(20, 3000);
                 int y = random.Next(20, 3000);
-                //_map.AddObject(new Components.Object(x, y, EnumSprite.TREE_1));
-                _entityFactory.CreateTree(new Vector2(x, y));
+
+                int type = random.Next((int)EnumSprite.TREE_1, (int)EnumSprite.TREE_1 + 8);
+
+                _map.AddObject(new Components.Object(x, y, (EnumSprite)type));
             }
 
             _cellHighlight = new PrimitiveRectangle(PrimitiveRectangle.Type.OUTLINE, Constants.TILE_WIDTH, Constants.TILE_HEIGHT, TextureManager.Instance.GetTexture("blank"), Color.Transparent, Color.Red, 1);
-
-            //_map.CreateRegion(0, 0);
         }
 
         public void End()
@@ -117,15 +105,11 @@ namespace DwarfMine.States.StateImplementation.Game
             _mouseListener.Update(time);
 
             _map.Update(time, camera);
-
-            _world.Update(time);
         }
 
         public void Draw(GameTime time, CustomSpriteBatch spriteBatch, OrthographicCamera camera)
         {
             _map.Draw(time, spriteBatch, camera);
-
-            _world.Draw(time);
 
             spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: camera.GetViewMatrix());
 

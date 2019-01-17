@@ -64,21 +64,21 @@ namespace DwarfMine.States.StateImplementation.Game.Components
                 }
             }
 
-            //_objectLayer.Update(time, camera);
+            _objectLayer.Update(time, camera);
         }
 
         public void Draw(GameTime time, CustomSpriteBatch spriteBatch, OrthographicCamera camera)
         {
             if (_activeRegions.Any())
             {
-                spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: camera.GetViewMatrix());
+                spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: camera.GetViewMatrix(), blendState: BlendState.AlphaBlend);
 
                 foreach (var region in _activeRegions)
                 {
                     region.Draw(time, spriteBatch);
                 }
 
-                //_objectLayer.Draw(spriteBatch, time);
+                _objectLayer.Draw(time, spriteBatch, camera);
 
                 spriteBatch.End();
             }

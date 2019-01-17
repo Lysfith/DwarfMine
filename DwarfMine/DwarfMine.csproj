@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <Folder Include="Libs\" />
+    <Folder Include="States\StateImplementation\Game\Systems\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -35,7 +35,13 @@ namespace DwarfMine.States.StateImplementation.Game.Components
                 _askClear = false;
             }
 
+            
+        }
+
+        public void Draw(GameTime time, CustomSpriteBatch spriteBatch, OrthographicCamera camera)
+        {
             var rectangle = camera.BoundingRectangle;
+            rectangle.Inflate(Constants.TILE_WIDTH * 0.5f, Constants.TILE_HEIGHT * 0.5f);
 
             _objectsVisible = _objects.Where(x => rectangle.Contains(new Point(x.X, x.Y))).ToList();
 
@@ -47,11 +53,8 @@ namespace DwarfMine.States.StateImplementation.Game.Components
                 }
                 return a.Y < b.Y ? -1 : 1;
             });
-        }
 
-        public void Draw(CustomSpriteBatch spriteBatch, GameTime time)
-        {
-            foreach(var obj in _objectsVisible)
+            foreach (var obj in _objectsVisible)
             {
                 obj.Draw(spriteBatch, time);
             }

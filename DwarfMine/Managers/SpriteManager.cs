@@ -80,8 +80,15 @@ namespace DwarfMine.Managers
             //AddOrReplaceSprite(EnumSprite.GRASS_INNER_BOTTOM_RIGHT, new Sprite(new TextureRegion2D(outdoors, new Rectangle(16 * 2, 16 * 2, 16, 16))));
 
             var tiles2 = TextureManager.Instance.GetTexture($"{directory}tiles-2");
-            AddOrReplaceSprite(EnumSprite.TREE_1, new Sprite(new TextureRegion2D(tiles2, new Rectangle(0, 192, 64, 64))));
+            
             AddOrReplaceSprite(EnumSprite.GRASS_1, new Sprite(new TextureRegion2D(tiles2, new Rectangle(0, 0, 32, 32))));
+            AddOrReplaceSprite(EnumSprite.TREE_1, new Sprite(new TextureRegion2D(tiles2, new Rectangle(0, 192, 64, 64))));
+            AddOrReplaceSprite(EnumSprite.FLOWER_1, new Sprite(new TextureRegion2D(tiles2, new Rectangle(0, 96, 32, 32))));
+            AddOrReplaceSprite(EnumSprite.FLOWER_2, new Sprite(new TextureRegion2D(tiles2, new Rectangle(32, 96, 32, 32))));
+            AddOrReplaceSprite(EnumSprite.FLOWER_3, new Sprite(new TextureRegion2D(tiles2, new Rectangle(32 * 2, 96, 32, 32))));
+            AddOrReplaceSprite(EnumSprite.FLOWER_4, new Sprite(new TextureRegion2D(tiles2, new Rectangle(32 * 3, 96, 32, 32))));
+            AddOrReplaceSprite(EnumSprite.FLOWER_5, new Sprite(new TextureRegion2D(tiles2, new Rectangle(32 * 4, 96, 32, 32))));
+            AddOrReplaceSprite(EnumSprite.FLOWER_6, new Sprite(new TextureRegion2D(tiles2, new Rectangle(32 * 5, 96, 32, 32))));
         }
     }
 }

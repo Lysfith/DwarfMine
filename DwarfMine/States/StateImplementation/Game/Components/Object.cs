@@ -29,7 +29,7 @@ namespace DwarfMine.States.StateImplementation.Game.Components
 
         public void Draw(CustomSpriteBatch spriteBatch, GameTime time)
         {
-            var sprite = SpriteManager.Instance.GetSprite(EnumSprite.TREE_1);
+            var sprite = SpriteManager.Instance.GetSprite(Sprite);
 
             spriteBatch.Draw(sprite, new Transform2(X, Y));
         }
