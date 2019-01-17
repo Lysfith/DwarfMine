@@ -137,9 +137,9 @@ namespace DwarfMine.Utils
 
             spritebatch.Begin();
 
-            spritebatch.DrawString(_font, $"Update : {_updateTime.ToString("0000")} ms", new Vector2(10, 10), Color.Yellow);
-            spritebatch.DrawString(_font, $"Draw : {_drawTime.ToString("0000")} ms", new Vector2(10, 30), Color.Yellow);
-            spritebatch.DrawString(_font, $"DrawCalls : {drawCount}", new Vector2(10, 50), Color.Yellow);
+            spritebatch.SpriteBatch.DrawString(_font, $"Update : {_updateTime.ToString("0000")} ms", new Vector2(10, 10), Color.Yellow);
+            spritebatch.SpriteBatch.DrawString(_font, $"Draw : {_drawTime.ToString("0000")} ms", new Vector2(10, 30), Color.Yellow);
+            spritebatch.SpriteBatch.DrawString(_font, $"DrawCalls : {drawCount}", new Vector2(10, 50), Color.Yellow);
 
             spritebatch.End();
 #endif

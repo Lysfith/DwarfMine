@@ -54,14 +54,14 @@ namespace DwarfMine.States.StateImplementation.Game.Components.RegionLayers
 
         private void CreateTexture()
         {
-            var spriteBatch = new CustomSpriteBatch(GraphicManager.Instance.GraphicsDevice);
+            var spriteBatch = new SpriteBatch(GraphicManager.Instance.GraphicsDevice);
             var renderTarget = new RenderTarget2D(GraphicManager.Instance.GraphicsDevice, Rectangle.Width, Rectangle.Height);
 
             GraphicManager.Instance.GraphicsDevice.SetRenderTarget(renderTarget);
 
             spriteBatch.Begin();
 
-            var sprite = SpriteManager.Instance.GetSprite(EnumSprite.GRASS_INNER_CENTER);
+            var sprite = SpriteManager.Instance.GetSprite(EnumSprite.GRASS_1);
 
             for (int y = 0; y < Constants.REGION_HEIGHT; y++)
             {

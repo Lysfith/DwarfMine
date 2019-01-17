@@ -13,11 +13,13 @@ namespace DwarfMine.States.StateImplementation.Game.Components
     {
         private Dictionary<string, Region> _regions;
         private List<Region> _activeRegions;
+        private ObjectLayer _objectLayer;
 
         public Map()
         {
             _regions = new Dictionary<string, Region>();
             _activeRegions = new List<Region>();
+            _objectLayer = new ObjectLayer();
         }
 
         public void CreateRegion(int x, int y)
@@ -31,6 +33,12 @@ namespace DwarfMine.States.StateImplementation.Game.Components
         {
             return _regions.Where(r => r.Value.Rectangle.Contains(xWorld, yWorld)).Select(r => r.Value).FirstOrDefault();
         }
+
+        public void AddObject(Object obj)
+        {
+            _objectLayer.AddObject(obj);
+        }
+
 
         public void Update(GameTime time, OrthographicCamera camera)
         {
@@ -55,6 +63,8 @@ namespace DwarfMine.States.StateImplementation.Game.Components
                     region.Value.SetVisible(false);
                 }
             }
+
+            //_objectLayer.Update(time, camera);
         }
 
         public void Draw(GameTime time, CustomSpriteBatch spriteBatch, OrthographicCamera camera)
@@ -67,6 +77,8 @@ namespace DwarfMine.States.StateImplementation.Game.Components
                 {
                     region.Draw(time, spriteBatch);
                 }
+
+                //_objectLayer.Draw(spriteBatch, time);
 
                 spriteBatch.End();
             }

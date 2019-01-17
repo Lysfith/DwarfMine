@@ -54,14 +54,15 @@ namespace DwarfMine.States.StateImplementation.Game.Components.RegionLayers
 
         private void CreateTexture()
         {
-            var spriteBatch = new CustomSpriteBatch(GraphicManager.Instance.GraphicsDevice);
+            var spriteBatch = new SpriteBatch(GraphicManager.Instance.GraphicsDevice);
+            var customSpriteBatch = new CustomSpriteBatch(spriteBatch);
             var renderTarget = new RenderTarget2D(GraphicManager.Instance.GraphicsDevice, Rectangle.Width, Rectangle.Height);
 
             GraphicManager.Instance.GraphicsDevice.SetRenderTarget(renderTarget);
 
             GraphicManager.Instance.GraphicsDevice.Clear(Color.Transparent);
 
-            spriteBatch.Begin();
+            customSpriteBatch.Begin();
 
             //var sprite = SpriteManager.Instance.GetSprite(EnumSprite.GRASS_INNER_CENTER);
 
@@ -77,15 +78,26 @@ namespace DwarfMine.States.StateImplementation.Game.Components.RegionLayers
 
             for (int y = 0; y <= Constants.REGION_HEIGHT; y++)
             {
-                spriteBatch.DrawLine(new Vector2(0, y * Constants.TILE_HEIGHT), new Vector2(Constants.REGION_WIDTH * Constants.TILE_WIDTH, y * Constants.TILE_HEIGHT), Color.White);
+
+                customSpriteBatch.DrawHorizontalLine(new Vector2(0, y * Constants.TILE_HEIGHT), new Vector2(Constants.REGION_WIDTH * Constants.TILE_WIDTH, y * Constants.TILE_HEIGHT), Color.White, 1);
+
+                if (y > 0)
+                {
+                    customSpriteBatch.DrawHorizontalLine(new Vector2(0, y * Constants.TILE_HEIGHT-1), new Vector2(Constants.REGION_WIDTH * Constants.TILE_WIDTH, y * Constants.TILE_HEIGHT-1), Color.White, 1);
+                }
             }
 
             for (int x = 0; x <= Constants.REGION_WIDTH; x++)
             {
-                spriteBatch.DrawLine(new Vector2(x * Constants.TILE_WIDTH, 0), new Vector2(x * Constants.TILE_WIDTH, Constants.REGION_HEIGHT * Constants.TILE_HEIGHT), Color.White);
+                customSpriteBatch.DrawVerticalLine(new Vector2(x * Constants.TILE_WIDTH, 0), new Vector2(x * Constants.TILE_WIDTH, Constants.REGION_HEIGHT * Constants.TILE_HEIGHT), Color.White, 1);
+
+                if (x > 0)
+                {
+                    customSpriteBatch.DrawVerticalLine(new Vector2(x * Constants.TILE_WIDTH-1, 0), new Vector2(x * Constants.TILE_WIDTH-1, Constants.REGION_HEIGHT * Constants.TILE_HEIGHT), Color.White, 1);
+                }
             }
 
-            spriteBatch.End();
+            customSpriteBatch.End();
 
             GraphicManager.Instance.GraphicsDevice.SetRenderTarget(null);
 

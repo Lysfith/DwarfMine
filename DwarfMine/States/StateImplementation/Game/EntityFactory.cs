@@ -22,15 +22,15 @@ namespace DwarfMine.States.StateImplementation.Game
             _world = world;
         }
 
-        public Entity CreateTile(Vector2 position)
+        public Entity CreateTree(Vector2 position)
         {
-            Sprite sprite = SpriteManager.Instance.GetSprite(EnumSprite.GRASS_INNER_TOP_LEFT);
+            Sprite sprite = SpriteManager.Instance.GetSprite(EnumSprite.TREE_1);
 
             var entity = _world.CreateEntity();
             entity.Attach(new Transform2(position, 0, Vector2.One));
             entity.Attach(sprite);
             //entity.Attach(new Body { Position = position, Size = new Vector2(32, 64), BodyType = BodyType.Dynamic });
-            entity.Attach(new Player());
+            //entity.Attach(new Player());
             return entity;
         }
     }

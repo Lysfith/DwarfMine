@@ -42,23 +42,13 @@ namespace DwarfMine.Graphics
                     spriteBatch.Draw(_fillTexture, _rect, _fillColor);
                     break;
                 case Type.OUTLINE:
-                    DrawOutline(spriteBatch, x, y);
+                    spriteBatch.DrawRectangle(_rect, _lineSize, _lineColor);
                     break;
                 case Type.FILL_OUTLINE:
                     spriteBatch.Draw(_fillTexture, _insideRect, _fillColor);
-                    DrawOutline(spriteBatch, x, y);
+                    spriteBatch.DrawRectangle(_rect, _lineSize, _lineColor);
                     break;
             }
-        }
-
-        private void DrawOutline(CustomSpriteBatch spriteBatch, int x, int y)
-        {
-            var position = new Vector2(_rect.X, _rect.Y);
-
-            spriteBatch.DrawLine(position, position + new Vector2(_rect.Width, 0), _lineColor, _lineSize);
-            spriteBatch.DrawLine(position, position + new Vector2(0, _rect.Height), _lineColor, _lineSize);
-            spriteBatch.DrawLine(position + new Vector2(_rect.Width, 0), position + new Vector2(_rect.Width, _rect.Height), _lineColor, _lineSize);
-            spriteBatch.DrawLine(position + new Vector2(0, _rect.Height), position + new Vector2(_rect.Width, _rect.Height), _lineColor, _lineSize);
         }
     }
 }

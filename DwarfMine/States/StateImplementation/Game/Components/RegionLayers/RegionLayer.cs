@@ -38,11 +38,13 @@ namespace DwarfMine.States.StateImplementation.Game.Components.RegionLayers
         public void Enable()
         {
             IsEnabled = true;
+            Dirty();
         }
 
         public void Disable()
         {
             IsEnabled = false;
+            DisposeResources();
         }
     }
 }

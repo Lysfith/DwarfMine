@@ -22,5 +22,7 @@ namespace DwarfMine.States.StateImplementation.Game
         GRASS_INNER_BOTTOM_LEFT,
         GRASS_INNER_BOTTOM,
         GRASS_INNER_BOTTOM_RIGHT,
+        TREE_1,
+        GRASS_1,
     }
 }

@@ -1,4 +1,5 @@
-﻿using DwarfMine.Managers;
+﻿using DwarfMine.Graphics;
+using DwarfMine.Managers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -16,12 +17,19 @@ namespace DwarfMine.States.StateImplementation.Game.Systems
 {
     public class RenderSystem : EntityDrawSystem
     {
-        private readonly SpriteBatch _spriteBatch;
+        private class Entity
+        {
+            public int Id { get; set; }
+            public Transform2 Transform { get; set; }
+            public Sprite Sprite { get; set; }
+        }
+
+        private readonly CustomSpriteBatch _spriteBatch;
         private readonly OrthographicCamera _camera;
         private ComponentMapper<Sprite> _spriteMapper;
         private ComponentMapper<Transform2> _transforMapper;
 
-        public RenderSystem(SpriteBatch spriteBatch, OrthographicCamera camera)
+        public RenderSystem(CustomSpriteBatch spriteBatch, OrthographicCamera camera)
          : base(Aspect.All(typeof(Transform2)).One(typeof(Sprite)))
         {
             _spriteBatch = spriteBatch;
@@ -40,18 +48,27 @@ namespace DwarfMine.States.StateImplementation.Game.Systems
 
             var rectangle = _camera.BoundingRectangle;
 
-            foreach (var entity in ActiveEntities)
+            var entities = ActiveEntities.Select(x => new Entity()
             {
-                var transform = _transforMapper.Get(entity);
+                Id = x,
+                Transform = _transforMapper.Get(x)
+            })
+            .Where(x => rectangle.Contains(x.Transform.Position)).ToList();
 
-                var rectangleSprite = new RectangleF(transform.Position.X - Constants.TILE_WIDTH * 0.5f, transform.Position.Y - Constants.TILE_HEIGHT * 0.5f, Constants.TILE_WIDTH, Constants.TILE_HEIGHT); 
-
-                if (rectangle.Intersects(rectangleSprite))
+            entities.Sort(delegate (Entity a, Entity b)
+            {
+                if (a.Transform.Position.Y == b.Transform.Position.Y)
                 {
-                    var sprite = _spriteMapper.Get(entity);
-
-                    _spriteBatch.Draw(sprite, transform);
+                    return a.Transform.Position.X < b.Transform.Position.X ? -1 : 1;
                 }
+                return a.Transform.Position.Y < b.Transform.Position.Y ? -1 : 1;
+            });
+
+            foreach (var entity in entities)
+            {
+                var sprite = _spriteMapper.Get(entity.Id);
+
+                _spriteBatch.Draw(sprite, entity.Transform);
             }
 
             _spriteBatch.End();

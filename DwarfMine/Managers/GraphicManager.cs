@@ -39,7 +39,8 @@ namespace DwarfMine.Managers
         {
             GraphicsDevice = device;
 
-            SpriteBatch = new CustomSpriteBatch(GraphicsDevice);
+            var spriteBatch = new SpriteBatch(GraphicsDevice);
+            SpriteBatch = new CustomSpriteBatch(spriteBatch);
         }
 
         public void SetCamera(OrthographicCamera camera)

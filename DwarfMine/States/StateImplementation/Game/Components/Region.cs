@@ -32,7 +32,7 @@ namespace DwarfMine.States.StateImplementation.Game.Components
             _layers = new Dictionary<RegionLayer.LayerType, RegionLayer>()
             {
                 { RegionLayer.LayerType.FLOOR, new RegionLayerFloor(Rectangle) },
-                { RegionLayer.LayerType.GRID, new RegionLayerGrid(Rectangle) },
+                //{ RegionLayer.LayerType.GRID, new RegionLayerGrid(Rectangle) },
             };
         }
 

@@ -43,7 +43,7 @@ namespace DwarfMine.States.StateImplementation.Game
                //.AddSystem(new WorldSystem())
                //.AddSystem(new PlayerSystem())
                //.AddSystem(new EnemySystem())
-               //.AddSystem(new RenderSystem(GraphicManager.Instance.SpriteBatch, GraphicManager.Instance.Camera))
+               .AddSystem(new RenderSystem(GraphicManager.Instance.SpriteBatch, GraphicManager.Instance.Camera))
                .Build();
 
             _entityFactory = new EntityFactory(_world);
@@ -81,6 +81,16 @@ namespace DwarfMine.States.StateImplementation.Game
                 }
             }
 
+            var random = new Random();
+
+            for (int i = 0; i < 10000; i++)
+            {
+                int x = random.Next(20, 3000);
+                int y = random.Next(20, 3000);
+                //_map.AddObject(new Components.Object(x, y, EnumSprite.TREE_1));
+                _entityFactory.CreateTree(new Vector2(x, y));
+            }
+
             _cellHighlight = new PrimitiveRectangle(PrimitiveRectangle.Type.OUTLINE, Constants.TILE_WIDTH, Constants.TILE_HEIGHT, TextureManager.Instance.GetTexture("blank"), Color.Transparent, Color.Red, 1);
 
             //_map.CreateRegion(0, 0);
@@ -106,16 +116,16 @@ namespace DwarfMine.States.StateImplementation.Game
             _keyboardListener.Update(time);
             _mouseListener.Update(time);
 
-            _world.Update(time);
-
             _map.Update(time, camera);
+
+            _world.Update(time);
         }
 
         public void Draw(GameTime time, CustomSpriteBatch spriteBatch, OrthographicCamera camera)
         {
-            _world.Draw(time);
-
             _map.Draw(time, spriteBatch, camera);
+
+            _world.Draw(time);
 
             spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: camera.GetViewMatrix());
 
