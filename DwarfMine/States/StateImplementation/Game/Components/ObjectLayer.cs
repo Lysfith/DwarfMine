@@ -34,8 +34,6 @@ namespace DwarfMine.States.StateImplementation.Game.Components
                 _objects.Clear();
                 _askClear = false;
             }
-
-            
         }
 
         public void Draw(GameTime time, CustomSpriteBatch spriteBatch, OrthographicCamera camera)

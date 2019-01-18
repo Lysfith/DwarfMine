@@ -82,7 +82,7 @@ namespace DwarfMine.Managers
             var tiles2 = TextureManager.Instance.GetTexture($"{directory}tiles-2");
             
             AddOrReplaceSprite(EnumSprite.GRASS_1, new Sprite(new TextureRegion2D(tiles2, new Rectangle(0, 0, 32, 32))));
-            AddOrReplaceSprite(EnumSprite.TREE_1, new Sprite(new TextureRegion2D(tiles2, new Rectangle(0, 192, 64, 64))));
+            AddOrReplaceSprite(EnumSprite.TREE_1, new Sprite(new TextureRegion2D(tiles2, new Rectangle(0, 192, 64, 64))) { Origin = new Vector2(32, 48) });
             AddOrReplaceSprite(EnumSprite.FLOWER_1, new Sprite(new TextureRegion2D(tiles2, new Rectangle(0, 96, 32, 32))));
             AddOrReplaceSprite(EnumSprite.FLOWER_2, new Sprite(new TextureRegion2D(tiles2, new Rectangle(32, 96, 32, 32))));
             AddOrReplaceSprite(EnumSprite.FLOWER_3, new Sprite(new TextureRegion2D(tiles2, new Rectangle(32 * 2, 96, 32, 32))));

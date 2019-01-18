@@ -76,9 +76,28 @@ namespace DwarfMine.States.StateImplementation.Game
                 int x = random.Next(20, 3000);
                 int y = random.Next(20, 3000);
 
-                int type = random.Next((int)EnumSprite.TREE_1, (int)EnumSprite.TREE_1 + 8);
+                var region = _map.GetRegion(x, y);
 
-                _map.AddObject(new Components.Object(x, y, (EnumSprite)type));
+                if (region != null)
+                {
+                    var cell = region.GetCellPosition(x, y);
+                    var cellIndex = region.GetCellIndex(x, y);
+                    x = cell.X;
+                    y = cell.Y;
+
+                    if (!region.GetCollision(cellIndex.X, cellIndex.Y))
+                    {
+                        int type = random.Next((int)EnumSprite.TREE_1, (int)EnumSprite.TREE_1 + 8);
+
+                        if (type == 11)
+                        {
+                            type = 10;
+                        }
+                        _map.AddObject(new Components.Object(x, y, (EnumSprite)type));
+
+                        region.SetCollision(cellIndex.X, cellIndex.Y, true);
+                    }
+                }
             }
 
             _cellHighlight = new PrimitiveRectangle(PrimitiveRectangle.Type.OUTLINE, Constants.TILE_WIDTH, Constants.TILE_HEIGHT, TextureManager.Instance.GetTexture("blank"), Color.Transparent, Color.Red, 1);
@@ -115,7 +134,7 @@ namespace DwarfMine.States.StateImplementation.Game
 
             if (_currentCellHovered != null)
             {
-                _cellHighlight.Draw(spriteBatch, _currentCellHovered.Value.X, _currentCellHovered.Value.Y);
+                _cellHighlight.Draw(spriteBatch, _currentCellHovered.Value.X - Constants.TILE_HALF_WIDTH, _currentCellHovered.Value.Y - Constants.TILE_HALF_HEIGHT);
             }
 
             spriteBatch.End();

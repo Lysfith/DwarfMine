@@ -11,7 +11,8 @@ namespace DwarfMine.States.StateImplementation.Game.Components.RegionLayers
         public enum LayerType
         {
             FLOOR,
-            GRID
+            GRID,
+            COLLISION
         }
 
         public readonly LayerType Type;

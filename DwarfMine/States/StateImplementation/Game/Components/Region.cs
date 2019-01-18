@@ -33,6 +33,7 @@ namespace DwarfMine.States.StateImplementation.Game.Components
             {
                 { RegionLayer.LayerType.FLOOR, new RegionLayerFloor(Rectangle) },
                 //{ RegionLayer.LayerType.GRID, new RegionLayerGrid(Rectangle) },
+                { RegionLayer.LayerType.COLLISION, new RegionLayerCollision(Rectangle) },
             };
         }
 
@@ -42,8 +43,18 @@ namespace DwarfMine.States.StateImplementation.Game.Components
             var positionYInRegion = yWorld - Y;
 
             return new Point(
-                (int)(positionXInRegion / Constants.TILE_WIDTH) * Constants.TILE_WIDTH + X, 
-                (int)(positionYInRegion / Constants.TILE_HEIGHT) * Constants.TILE_HEIGHT + Y);
+                (int)(positionXInRegion / Constants.TILE_WIDTH) * Constants.TILE_WIDTH + X + Constants.TILE_HALF_WIDTH, 
+                (int)(positionYInRegion / Constants.TILE_HEIGHT) * Constants.TILE_HEIGHT + Y + Constants.TILE_HALF_HEIGHT);
+        }
+
+        public Point GetCellIndex(int xWorld, int yWorld)
+        {
+            var positionXInRegion = xWorld - X;
+            var positionYInRegion = yWorld - Y;
+
+            return new Point(
+                (int)(positionXInRegion / Constants.TILE_WIDTH),
+                (int)(positionYInRegion / Constants.TILE_HEIGHT));
         }
 
         public bool IsIn(Vector2 point)
@@ -93,6 +104,20 @@ namespace DwarfMine.States.StateImplementation.Game.Components
         {
             PreviousVisibility = Visibility;
             Visibility = value;
+        }
+
+        public void SetCollision(int x, int y, bool value)
+        {
+            var layer = _layers[RegionLayer.LayerType.COLLISION] as RegionLayerCollision;
+
+            layer.SetCollision(x, y, value);
+        }
+
+        public bool GetCollision(int x, int y)
+        {
+            var layer = _layers[RegionLayer.LayerType.COLLISION] as RegionLayerCollision;
+
+            return layer.GetCollision(x, y);
         }
     }
 }
