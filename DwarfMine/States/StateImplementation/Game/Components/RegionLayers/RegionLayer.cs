@@ -19,6 +19,7 @@ namespace DwarfMine.States.StateImplementation.Game.Components.RegionLayers
         public readonly Rectangle Rectangle;
         public bool IsEnabled { get; private set; } = true;
         public bool IsDirty { get; protected set; } = true;
+        public bool IsLoaded { get; protected set; } = false;
 
         public RegionLayer(LayerType type, Rectangle rectangle)
         {
@@ -46,6 +47,11 @@ namespace DwarfMine.States.StateImplementation.Game.Components.RegionLayers
         {
             IsEnabled = false;
             DisposeResources();
+        }
+
+        public void Loaded()
+        {
+            IsLoaded = true;
         }
     }
 }

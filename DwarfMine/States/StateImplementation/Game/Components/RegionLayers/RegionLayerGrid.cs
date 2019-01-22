@@ -23,7 +23,7 @@ namespace DwarfMine.States.StateImplementation.Game.Components.RegionLayers
         {
             if (IsEnabled)
             {
-                if (IsDirty)
+                if (IsDirty && IsLoaded)
                 {
                     CreateTexture();
 

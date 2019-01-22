@@ -62,6 +62,14 @@ namespace DwarfMine.States.StateImplementation.Game.Components
             return Rectangle.Contains(point);
         }
 
+        public void Loaded()
+        {
+            foreach (var layer in _layers)
+            {
+                layer.Value.Loaded();
+            }
+        }
+
         public void Update(GameTime time)
         {
             if (PreviousVisibility != Visibility)

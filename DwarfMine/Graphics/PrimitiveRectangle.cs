@@ -9,10 +9,10 @@ namespace DwarfMine.Graphics
     public class PrimitiveRectangle
     {
         public enum Type { FILL, OUTLINE, FILL_OUTLINE };
-        public Rectangle _rect;
-        public Rectangle _insideRect;
-        public Color _fillColor;
-        public Color _lineColor;
+        private Rectangle _rect;
+        private Rectangle _insideRect;
+        private Color _fillColor;
+        private Color _lineColor;
         private Type _type;
         private int _lineSize;
         private Texture2D _fillTexture;
@@ -47,6 +47,26 @@ namespace DwarfMine.Graphics
                 case Type.FILL_OUTLINE:
                     spriteBatch.Draw(_fillTexture, _insideRect, _fillColor);
                     spriteBatch.DrawRectangle(_rect, _lineSize, _lineColor);
+                    break;
+            }
+        }
+
+        public void Draw(CustomSpriteBatch spriteBatch, Rectangle rectangle)
+        {
+            switch (_type)
+            {
+                case Type.FILL:
+                    spriteBatch.Draw(_fillTexture, rectangle, _fillColor);
+                    break;
+                case Type.OUTLINE:
+                    spriteBatch.DrawRectangle(rectangle, _lineSize, _lineColor);
+                    break;
+                case Type.FILL_OUTLINE:
+                    var insideRect = new Rectangle(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+                    insideRect.Inflate(-_lineSize, -_lineSize);
+
+                    spriteBatch.Draw(_fillTexture, insideRect, _fillColor);
+                    spriteBatch.DrawRectangle(rectangle, _lineSize, _lineColor);
                     break;
             }
         }

@@ -39,6 +39,13 @@ namespace DwarfMine.States.StateImplementation.Game.Components
             _objectLayer.AddObject(obj);
         }
 
+        public void Loaded()
+        {
+            foreach (var region in _regions)
+            {
+                region.Value.Loaded();
+            }
+        }
 
         public void Update(GameTime time, OrthographicCamera camera)
         {

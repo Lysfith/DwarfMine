@@ -28,17 +28,19 @@ namespace DwarfMine.States.StateImplementation.Game
         private Point? _currentCellHovered;
 
         private Map _map;
+        private Random _random;
 
         public GameState()
         {
             _font = AssetManager.Instance.MainFont;
+            _random = new Random();
         }
 
         public void Start()
         {
             var camera = GraphicManager.Instance.Camera;
 
-            camera.MinimumZoom = 1f;
+            camera.MinimumZoom = 0.5f;
             camera.MaximumZoom = 3f;
 
             camera.LookAt(Vector2.Zero);
@@ -76,29 +78,10 @@ namespace DwarfMine.States.StateImplementation.Game
                 int x = random.Next(20, 3000);
                 int y = random.Next(20, 3000);
 
-                var region = _map.GetRegion(x, y);
-
-                if (region != null)
-                {
-                    var cell = region.GetCellPosition(x, y);
-                    var cellIndex = region.GetCellIndex(x, y);
-                    x = cell.X;
-                    y = cell.Y;
-
-                    if (!region.GetCollision(cellIndex.X, cellIndex.Y))
-                    {
-                        int type = random.Next((int)EnumSprite.TREE_1, (int)EnumSprite.TREE_1 + 8);
-
-                        if (type == 11)
-                        {
-                            type = 10;
-                        }
-                        _map.AddObject(new Components.Object(x, y, (EnumSprite)type));
-
-                        region.SetCollision(cellIndex.X, cellIndex.Y, true);
-                    }
-                }
+                AddObject(x, y);
             }
+
+            _map.Loaded();
 
             _cellHighlight = new PrimitiveRectangle(PrimitiveRectangle.Type.OUTLINE, Constants.TILE_WIDTH, Constants.TILE_HEIGHT, TextureManager.Instance.GetTexture("blank"), Color.Transparent, Color.Red, 1);
         }
@@ -141,6 +124,32 @@ namespace DwarfMine.States.StateImplementation.Game
 
         }
 
+        private void AddObject(int x, int y)
+        {
+            var region = _map.GetRegion(x, y);
+
+            if (region != null)
+            {
+                var cell = region.GetCellPosition(x, y);
+                var cellIndex = region.GetCellIndex(x, y);
+                x = cell.X;
+                y = cell.Y;
+
+                if (!region.GetCollision(cellIndex.X, cellIndex.Y))
+                {
+                    int type = _random.Next((int)EnumSprite.TREE_1, (int)EnumSprite.TREE_1 + 8);
+
+                    if (type == 11)
+                    {
+                        type = 10;
+                    }
+                    _map.AddObject(new Components.Object(x, y, (EnumSprite)type));
+
+                    region.SetCollision(cellIndex.X, cellIndex.Y, true);
+                }
+            }
+        }
+
         #region Inputs
         private void KeyPressed(object sender, KeyboardEventArgs args)
         {
@@ -159,7 +168,15 @@ namespace DwarfMine.States.StateImplementation.Game
 
         private void MouseClicked(object sender, MouseEventArgs args)
         {
+            if(args.Button == MonoGame.Extended.Input.MouseButton.Left)
+            {
+                var mousePositionScreen = args.Position;
+                var camera = GraphicManager.Instance.Camera;
 
+                var mousePositionWorld = camera.ScreenToWorld(mousePositionScreen.X, mousePositionScreen.Y);
+
+                AddObject((int)mousePositionWorld.X, (int)mousePositionWorld.Y);
+            }
         }
 
         private void MouseDoubleClicked(object sender, MouseEventArgs args)
@@ -174,11 +191,14 @@ namespace DwarfMine.States.StateImplementation.Game
 
         private void MouseDrag(object sender, MouseEventArgs args)
         {
-            var distance = args.DistanceMoved;
+            if (args.Button == MonoGame.Extended.Input.MouseButton.Right)
+            {
+                var distance = args.DistanceMoved;
 
-            var camera = GraphicManager.Instance.Camera;
+                var camera = GraphicManager.Instance.Camera;
 
-            camera.Move(-distance / camera.Zoom);
+                camera.Move(-distance / camera.Zoom);
+            }
         }
 
         private void MouseDragEnd(object sender, MouseEventArgs args)
@@ -193,20 +213,23 @@ namespace DwarfMine.States.StateImplementation.Game
 
         private void MouseMoved(object sender, MouseEventArgs args)
         {
-            var mousePositionScreen = args.Position;
-            var camera = GraphicManager.Instance.Camera;
-
-            var mousePositionWorld = camera.ScreenToWorld(mousePositionScreen.X, mousePositionScreen.Y);
-
-            var region = _map.GetRegion((int)mousePositionWorld.X, (int)mousePositionWorld.Y);
-
-            if(region != null)
+            if (args.Button == MonoGame.Extended.Input.MouseButton.Right)
             {
-                _currentCellHovered = region.GetCellPosition((int)mousePositionWorld.X, (int)mousePositionWorld.Y);
-            }
-            else
-            {
-                _currentCellHovered = null;
+                var mousePositionScreen = args.Position;
+                var camera = GraphicManager.Instance.Camera;
+
+                var mousePositionWorld = camera.ScreenToWorld(mousePositionScreen.X, mousePositionScreen.Y);
+
+                var region = _map.GetRegion((int)mousePositionWorld.X, (int)mousePositionWorld.Y);
+
+                if (region != null)
+                {
+                    _currentCellHovered = region.GetCellPosition((int)mousePositionWorld.X, (int)mousePositionWorld.Y);
+                }
+                else
+                {
+                    _currentCellHovered = null;
+                }
             }
         }
 
