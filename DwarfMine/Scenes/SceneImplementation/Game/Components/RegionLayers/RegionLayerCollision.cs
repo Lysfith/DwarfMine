@@ -50,7 +50,7 @@ namespace DwarfMine.States.StateImplementation.Game.Components.RegionLayers
             {
                 if (IsDirty && IsLoaded)
                 {
-                    UpdateWalkableRect();
+                    //UpdateWalkableRect();
                     CreateTexture();
 
                     IsDirty = false;
@@ -78,70 +78,116 @@ namespace DwarfMine.States.StateImplementation.Game.Components.RegionLayers
             }
         }
 
-        private void UpdateWalkableRect()
-        {
-            _rectangleWalkables.Clear();
+        //private void UpdateWalkableRect()
+        //{
+        //    _rectangleWalkables.Clear();
 
-            var cellsClosed = new List<Point>();
+        //    var rectangles = Divide(new Rectangle(0, 0, Constants.REGION_WIDTH, Constants.REGION_HEIGHT));
 
-            for (int y = 0; y < Constants.REGION_HEIGHT; y++)
-            {
-                for (int x = 0; x < Constants.REGION_WIDTH; x++)
-                {
-                    var collision = GetCollision(x, y);
-                    if (!cellsClosed.Any(c => c.X == x && c.Y == y) && !collision)
-                    {
-                        var rect = GenerateWalkableRectangle(x, y, 1, cellsClosed);
+        //    foreach(var rect in rectangles)
+        //    {
+        //        _rectangleWalkables.Add(new Rectangle(rect.X * Constants.TILE_WIDTH, rect.Y * Constants.TILE_HEIGHT, rect.Width * Constants.TILE_WIDTH, rect.Height * Constants.TILE_HEIGHT));
+        //    }
 
-                        _rectangleWalkables.Add(new Rectangle(rect.X * Constants.TILE_WIDTH, rect.Y * Constants.TILE_HEIGHT, rect.Width * Constants.TILE_WIDTH, rect.Height * Constants.TILE_HEIGHT));
+        //    //var cellsClosed = new List<Point>();
 
-                        for (int rectY = rect.Y; rectY < rect.Y + rect.Height; rectY++)
-                        {
-                            for (int rectX = rect.X; rectX < rect.X + rect.Width; rectX++)
-                            {
-                                //if (!cellsClosed.Any(c => c.X == rectX && c.Y == rectY))
-                                //{
-                                    cellsClosed.Add(new Point(rectX, rectY));
-                                //}
-                            }
-                        }
-                    }
-                    else if(collision)
-                    {
-                        cellsClosed.Add(new Point(x, y));
-                    }
-                }
-            }
-        }
+        //    //for (int y = 0; y < Constants.REGION_HEIGHT; y++)
+        //    //{
+        //    //    for (int x = 0; x < Constants.REGION_WIDTH; x++)
+        //    //    {
+        //    //        var collision = GetCollision(x, y);
+        //    //        if (!cellsClosed.Any(c => c.X == x && c.Y == y) && !collision)
+        //    //        {
+        //    //            var rect = GenerateWalkableRectangle(x, y, 1, cellsClosed);
 
-        private Rectangle GenerateWalkableRectangle(int cellX, int cellY, int size, List<Point> cellsClosed)
-        {
-            var nextX = cellX + size - 1;
-            var nextY = cellY + size - 1;
+        //    //            _rectangleWalkables.Add(new Rectangle(rect.X * Constants.TILE_WIDTH, rect.Y * Constants.TILE_HEIGHT, rect.Width * Constants.TILE_WIDTH, rect.Height * Constants.TILE_HEIGHT));
 
-            if (nextY >= Constants.REGION_HEIGHT || nextX >= Constants.REGION_WIDTH || cellY + size - 1 >= Constants.REGION_HEIGHT || cellX + size - 1 >= Constants.REGION_WIDTH)
-            {
-                return new Rectangle(cellX, cellY, size - 1, size - 1);
-            }
+        //    //            for (int rectY = rect.Y; rectY < rect.Y + rect.Height; rectY++)
+        //    //            {
+        //    //                for (int rectX = rect.X; rectX < rect.X + rect.Width; rectX++)
+        //    //                {
+        //    //                    //if (!cellsClosed.Any(c => c.X == rectX && c.Y == rectY))
+        //    //                    //{
+        //    //                        cellsClosed.Add(new Point(rectX, rectY));
+        //    //                    //}
+        //    //                }
+        //    //            }
+        //    //        }
+        //    //        else if(collision)
+        //    //        {
+        //    //            cellsClosed.Add(new Point(x, y));
+        //    //        }
+        //    //    }
+        //    //}
+        //}
 
-            for (int y = cellY; y < cellY + size; y++)
-            {
-                if (GetCollision(nextX, y) || cellsClosed.Any(c => c.X == nextX && c.Y == y))
-                {
-                    return new Rectangle(cellX, cellY, size - 1, size - 1);
-                }
-            }
+        //private List<Rectangle> Divide(Rectangle parent)
+        //{
+        //    var result = new List<Rectangle>();
 
-            for (int x = cellX; x < cellX + size; x++)
-            {
-                if (GetCollision(x, nextY) || cellsClosed.Any(c => c.X == x && c.Y == nextY))
-                {
-                    return new Rectangle(cellX, cellY, size - 1, size - 1);
-                }
-            }
+        //    bool hasCollision = false;
+        //    for (int y = parent.Y; y < parent.Y + parent.Height; y++)
+        //    {
+        //        for (int x = parent.X; x < parent.X + parent.Width; x++)
+        //        {
+        //            if (_collisions[x, y])
+        //            {
+        //                hasCollision = true;
+        //                break;
+        //            }
+        //        }
 
-            return GenerateWalkableRectangle(cellX, cellY, size + 1, cellsClosed);
-        }
+        //        if(hasCollision)
+        //        {
+        //            break;
+        //        }
+        //    }
+
+        //    if(hasCollision)
+        //    {
+        //        var width = parent.Width / 2;
+        //        var height = parent.Height / 2;
+        //        result.AddRange(Divide(new Rectangle(parent.X, parent.Y, width, height)));
+        //        result.AddRange(Divide(new Rectangle(parent.X + width, parent.Y, width, height)));
+        //        result.AddRange(Divide(new Rectangle(parent.X, parent.Y + width, width, height)));
+        //        result.AddRange(Divide(new Rectangle(parent.X + width, parent.Y + height, width, height)));
+        //    }
+        //    else
+        //    {
+        //        result.Add(parent);
+        //    }
+
+        //    return result;
+        //}
+
+        //private Rectangle GenerateWalkableRectangle(int cellX, int cellY, int size, List<Point> cellsClosed)
+        //{
+        //    var nextX = cellX + size - 1;
+        //    var nextY = cellY + size - 1;
+
+        //    if (nextY >= Constants.REGION_HEIGHT || nextX >= Constants.REGION_WIDTH || cellY + size - 1 >= Constants.REGION_HEIGHT || cellX + size - 1 >= Constants.REGION_WIDTH)
+        //    {
+        //        return new Rectangle(cellX, cellY, size - 1, size - 1);
+        //    }
+
+        //    for (int y = cellY; y < cellY + size; y++)
+        //    {
+        //        if (GetCollision(nextX, y) || cellsClosed.Any(c => c.X == nextX && c.Y == y))
+        //        {
+        //            return new Rectangle(cellX, cellY, size - 1, size - 1);
+        //        }
+        //    }
+
+        //    for (int x = cellX; x < cellX + size; x++)
+        //    {
+        //        if (GetCollision(x, nextY) || cellsClosed.Any(c => c.X == x && c.Y == nextY))
+        //        {
+        //            return new Rectangle(cellX, cellY, size - 1, size - 1);
+        //        }
+        //    }
+
+        //    return GenerateWalkableRectangle(cellX, cellY, size + 1, cellsClosed);
+        //}
 
         private void CreateTexture()
         {
@@ -168,10 +214,10 @@ namespace DwarfMine.States.StateImplementation.Game.Components.RegionLayers
                 }
             }
 
-            foreach (var rect in _rectangleWalkables)
-            {
-                _cellWalkable.Draw(customSpriteBatch, rect);
-            }
+            //foreach (var rect in _rectangleWalkables)
+            //{
+            //    _cellWalkable.Draw(customSpriteBatch, rect);
+            //}
 
             customSpriteBatch.End();
 

@@ -12,7 +12,8 @@ namespace DwarfMine.States.StateImplementation.Game.Components.RegionLayers
         {
             FLOOR,
             GRID,
-            COLLISION
+            COLLISION,
+            FLOW_FIELD
         }
 
         public readonly LayerType Type;

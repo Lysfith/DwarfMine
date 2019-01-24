@@ -39,6 +39,18 @@ namespace DwarfMine.States.StateImplementation.Game.Components
             _objectLayer.AddObject(obj);
         }
 
+        public void Select(int x, int y)
+        {
+            var region = GetRegion(x, y);
+
+            if(region != null)
+            {
+                var cellIndex = region.GetCellIndex(x, y);
+
+                region.Select(cellIndex.X, cellIndex.Y);
+            }
+        }
+
         public void Loaded()
         {
             foreach (var region in _regions)

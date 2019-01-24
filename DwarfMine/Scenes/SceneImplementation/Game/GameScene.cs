@@ -177,6 +177,15 @@ namespace DwarfMine.States.StateImplementation.Game
 
                 AddObject((int)mousePositionWorld.X, (int)mousePositionWorld.Y);
             }
+            else if(args.Button == MonoGame.Extended.Input.MouseButton.Middle)
+            {
+                var mousePositionScreen = args.Position;
+                var camera = GraphicManager.Instance.Camera;
+
+                var mousePositionWorld = camera.ScreenToWorld(mousePositionScreen.X, mousePositionScreen.Y);
+
+                _map.Select((int)mousePositionWorld.X, (int)mousePositionWorld.Y);
+            }
         }
 
         private void MouseDoubleClicked(object sender, MouseEventArgs args)

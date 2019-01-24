@@ -34,6 +34,7 @@ namespace DwarfMine.States.StateImplementation.Game.Components
                 { RegionLayer.LayerType.FLOOR, new RegionLayerFloor(Rectangle) },
                 //{ RegionLayer.LayerType.GRID, new RegionLayerGrid(Rectangle) },
                 { RegionLayer.LayerType.COLLISION, new RegionLayerCollision(Rectangle) },
+                { RegionLayer.LayerType.FLOW_FIELD, new RegionLayerFlowField(Rectangle) },
             };
         }
 
@@ -112,6 +113,13 @@ namespace DwarfMine.States.StateImplementation.Game.Components
         {
             PreviousVisibility = Visibility;
             Visibility = value;
+        }
+
+        public void Select(int x, int y)
+        {
+            var layer = _layers[RegionLayer.LayerType.FLOW_FIELD] as RegionLayerFlowField;
+
+            layer.SetDestination(x, y);
         }
 
         public void SetCollision(int x, int y, bool value)
