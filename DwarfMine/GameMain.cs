@@ -35,7 +35,7 @@ namespace DwarfMine
             DebugGame.SetFont(AssetManager.Instance.MainFont);
 #endif
 
-            StateManager.Instance.SetGameState(EnumGameState.Game);
+            SceneManager.Instance.SetScene(EnumScene.Game);
         }
 
         protected override void Update(GameTime gameTime)
@@ -44,7 +44,7 @@ namespace DwarfMine
             DebugGame.StartUpdate();
 #endif
 
-            StateManager.Instance.Update(gameTime, GraphicManager.Instance.Camera);
+            SceneManager.Instance.Update(gameTime, GraphicManager.Instance.Camera);
 
 #if DEBUG
             DebugGame.StopUpdate();
@@ -63,7 +63,7 @@ namespace DwarfMine
             DebugGame.StartDraw();
 #endif
 
-            StateManager.Instance.Draw(gameTime, GraphicManager.Instance.SpriteBatch, GraphicManager.Instance.Camera);
+            SceneManager.Instance.Draw(gameTime, GraphicManager.Instance.SpriteBatch, GraphicManager.Instance.Camera);
 
 #if DEBUG
             DebugGame.StopDraw();

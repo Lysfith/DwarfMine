@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DwarfMine
 {
-    public enum EnumGameState
+    public enum EnumScene
     {
         MainMenu,
         Game,

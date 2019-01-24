@@ -19,7 +19,7 @@ using System.Text;
 
 namespace DwarfMine.States.StateImplementation.Game
 {
-    class GameState : IState
+    class GameScene : IScene
     {
         private SpriteFont _font;
         private KeyboardListener _keyboardListener;
@@ -30,7 +30,7 @@ namespace DwarfMine.States.StateImplementation.Game
         private Map _map;
         private Random _random;
 
-        public GameState()
+        public GameScene()
         {
             _font = AssetManager.Instance.MainFont;
             _random = new Random();

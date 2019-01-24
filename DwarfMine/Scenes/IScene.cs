@@ -8,7 +8,7 @@ using System.Text;
 
 namespace DwarfMine.States
 {
-    public interface IState
+    public interface IScene
     {
         void Start();
         void End();

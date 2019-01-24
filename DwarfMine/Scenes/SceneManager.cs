@@ -12,40 +12,40 @@ using System.Text;
 
 namespace DwarfMine.States
 {
-    public class StateManager
+    public class SceneManager
     {
-        private static StateManager _instance;
-        public static StateManager Instance
+        private static SceneManager _instance;
+        public static SceneManager Instance
         {
             get
             {
                 if (_instance == null)
                 {
-                    _instance = new StateManager();
+                    _instance = new SceneManager();
                 }
 
                 return _instance;
             }
         }
 
-        private EnumGameState? _currentGameState;
-        private Dictionary<EnumGameState, IState> _gameStates;
+        private EnumScene? _currentScene;
+        private Dictionary<EnumScene, IScene> _scenes;
 
-        public StateManager()
+        public SceneManager()
         {
-            _gameStates = new Dictionary<EnumGameState, IState>();
+            _scenes = new Dictionary<EnumScene, IScene>();
         }
 
-        public void SetGameState(EnumGameState gameState)
+        public void SetScene(EnumScene scene)
         {
-            if (_currentGameState.HasValue)
+            if (_currentScene.HasValue)
             {
-                _gameStates[_currentGameState.Value].End();
+                _scenes[_currentScene.Value].End();
             }
 
-            bool stateHasChanged = false;
+            bool sceneHasChanged = false;
 
-            switch (gameState)
+            switch (scene)
             {
                 //case EnumGameState.MainMenu:
                 //    if (!m_gameState.HasValue
@@ -57,9 +57,9 @@ namespace DwarfMine.States
                 //        stateHasChanged = true;
                 //    }
                 //    break;
-                case EnumGameState.Game:
-                    _gameStates[gameState] = new GameState();
-                    _gameStates[gameState].Start();
+                case EnumScene.Game:
+                    _scenes[scene] = new GameScene();
+                    _scenes[scene].Start();
                     //if (m_gameState.HasValue
                     //    && (m_gameState.Value == EnumGameState.MainMenu
                     //    || m_gameState.Value == EnumGameState.Pause))
@@ -73,7 +73,7 @@ namespace DwarfMine.States
                     //        m_gameStates[gameState].Resume();
                     //    }
 
-                       stateHasChanged = true;
+                       sceneHasChanged = true;
                     //}
                     break;
                 //case EnumGameState.Pause:
@@ -91,43 +91,43 @@ namespace DwarfMine.States
             }
 
 
-            if (stateHasChanged)
+            if (sceneHasChanged)
             {
 #if DEBUG
                 DebugGame.Log(
-                    nameof(StateManager),
-                    nameof(SetGameState),
+                    nameof(SceneManager),
+                    nameof(SetScene),
                     string.Format("L'état du jeu a été modifié ! ({0} => {1})",
-                    _currentGameState, gameState));
+                    _currentScene, scene));
 #endif
 
-                this._currentGameState = gameState;
+                this._currentScene = scene;
             }
             else
             {
 #if DEBUG
                 DebugGame.Log(
-                    nameof(StateManager),
-                    nameof(SetGameState),
+                    nameof(SceneManager),
+                    nameof(SetScene),
                     string.Format("L'état du jeu n'a pas pu être modifié ! ({0} => {1})",
-                    _currentGameState, gameState));
+                    _currentScene, scene));
 #endif
             }
         }
 
         public void Update(GameTime time, OrthographicCamera camera)
         {
-            if (_currentGameState.HasValue)
+            if (_currentScene.HasValue)
             {
-                _gameStates[_currentGameState.Value].Update(time, camera);
+                _scenes[_currentScene.Value].Update(time, camera);
             }
         }
 
         public void Draw(GameTime time, CustomSpriteBatch spritebatch, OrthographicCamera camera)
         {
-            if (_currentGameState.HasValue)
+            if (_currentScene.HasValue)
             {
-                _gameStates[_currentGameState.Value].Draw(time, spritebatch, camera);
+                _scenes[_currentScene.Value].Draw(time, spritebatch, camera);
             }
         }
     }
