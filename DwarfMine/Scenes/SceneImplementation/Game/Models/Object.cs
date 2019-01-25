@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DwarfMine.States.StateImplementation.Game.Components
+namespace DwarfMine.States.StateImplementation.Game.Models
 {
     public class Object
     {
@@ -22,12 +22,12 @@ namespace DwarfMine.States.StateImplementation.Game.Components
             Sprite = sprite;
         }
 
-        public void Update(GameTime time)
+        public virtual void Update(GameTime time)
         {
 
         }
 
-        public void Draw(CustomSpriteBatch spriteBatch, GameTime time)
+        public virtual void Draw(CustomSpriteBatch spriteBatch, GameTime time)
         {
             var sprite = SpriteManager.Instance.GetSprite(Sprite);
 

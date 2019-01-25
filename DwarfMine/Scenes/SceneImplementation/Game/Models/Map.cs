@@ -1,4 +1,5 @@
 ﻿using DwarfMine.Graphics;
+using DwarfMine.States.StateImplementation.Game.Components;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -7,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DwarfMine.States.StateImplementation.Game.Components
+namespace DwarfMine.States.StateImplementation.Game.Models
 {
     public class Map
     {

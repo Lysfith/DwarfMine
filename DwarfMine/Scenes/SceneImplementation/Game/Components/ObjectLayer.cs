@@ -10,15 +10,15 @@ namespace DwarfMine.States.StateImplementation.Game.Components
 {
     public class ObjectLayer
     {
-        private List<Object> _objects;
-        private List<Object> _objectsVisible;
-        private List<Object> _objectsToAdd;
+        private List<Models.Object> _objects;
+        private List<Models.Object> _objectsVisible;
+        private List<Models.Object> _objectsToAdd;
         private bool _askClear;
 
         public ObjectLayer()
         {
-            _objects = new List<Object>();
-            _objectsToAdd = new List<Object>();
+            _objects = new List<Models.Object>();
+            _objectsToAdd = new List<Models.Object>();
         }
 
         public void Update(GameTime time, OrthographicCamera camera)
@@ -34,16 +34,21 @@ namespace DwarfMine.States.StateImplementation.Game.Components
                 _objects.Clear();
                 _askClear = false;
             }
-        }
 
-        public void Draw(GameTime time, CustomSpriteBatch spriteBatch, OrthographicCamera camera)
-        {
             var rectangle = camera.BoundingRectangle;
             rectangle.Inflate(Constants.TILE_WIDTH * 0.5f, Constants.TILE_HEIGHT * 0.5f);
 
             _objectsVisible = _objects.Where(x => rectangle.Contains(new Point(x.X, x.Y))).ToList();
 
-            _objectsVisible.Sort(delegate (Object a, Object b)
+            foreach (var obj in _objectsVisible)
+            {
+                obj.Update(time);
+            }
+        }
+
+        public void Draw(GameTime time, CustomSpriteBatch spriteBatch, OrthographicCamera camera)
+        {
+            _objectsVisible.Sort(delegate (Models.Object a, Models.Object b)
             {
                 if (a.Y == b.Y)
                 {
@@ -58,7 +63,7 @@ namespace DwarfMine.States.StateImplementation.Game.Components
             }
         }
 
-        public void AddObject(Object obj)
+        public void AddObject(Models.Object obj)
         {
             _objectsToAdd.Add(obj);
         }

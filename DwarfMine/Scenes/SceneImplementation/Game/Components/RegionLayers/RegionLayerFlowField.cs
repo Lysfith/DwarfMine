@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using DwarfMine.Graphics;
 using DwarfMine.Managers;
+using DwarfMine.Services;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -11,19 +12,31 @@ namespace DwarfMine.States.StateImplementation.Game.Components.RegionLayers
 {
     public class RegionLayerFlowField : RegionLayer
     {
+        public enum Direction {
+            NORTH,
+            SOUTH,
+            WEST,
+            EAST,
+            NORTH_WEST,
+            NORTH_EAST,
+            SOUTH_WEST,
+            SOUTH_EAST,
+            CENTER
+        }
+
         private Texture2D _texture;
 
-        private int[,] _tileValues;
         private byte[,] _tileCosts;
-        private Vector2[,] _flows;
+        private Dictionary<Direction, Vector2[,]> _flowDirections;
         private Point? _destination;
+        private bool _destinationHasChanged = false;
 
         public RegionLayerFlowField(Rectangle rectangle)
             : base(LayerType.FLOW_FIELD, rectangle)
         {
-            _flows = new Vector2[Constants.REGION_WIDTH, Constants.REGION_HEIGHT];
-            _tileValues = new int[Constants.REGION_WIDTH, Constants.REGION_HEIGHT];
             _tileCosts = new byte[Constants.REGION_WIDTH, Constants.REGION_HEIGHT];
+
+            _flowDirections = new Dictionary<Direction, Vector2[,]>();
 
             ResetCosts();
         }
@@ -55,15 +68,15 @@ namespace DwarfMine.States.StateImplementation.Game.Components.RegionLayers
             }
         }
 
-        private void ResetValues()
+        public Vector2 GetDirection(int x, int y)
         {
-            for (int y = 0; y < Constants.REGION_HEIGHT; y++)
+            if (_flowDirections.ContainsKey(Direction.CENTER))
             {
-                for (int x = 0; x < Constants.REGION_WIDTH; x++)
-                {
-                    _tileValues[x, y] = 65535;
-                }
+                var flow = _flowDirections[Direction.CENTER];
+                return flow[x, y];
             }
+
+            return Vector2.Zero;
         }
 
         public void SetDestination(int x, int y)
@@ -71,7 +84,7 @@ namespace DwarfMine.States.StateImplementation.Game.Components.RegionLayers
             if (_destination == null || _destination.Value.X != x || _destination.Value.Y != y)
             {
                 _destination = new Point(x, y);
-                Dirty();
+                _destinationHasChanged = true;
             }
         }
 
@@ -79,6 +92,18 @@ namespace DwarfMine.States.StateImplementation.Game.Components.RegionLayers
         {
             if (IsEnabled)
             {
+                if (_destinationHasChanged && IsLoaded)
+                {
+                    UpdateFlowInRegion();
+
+                    if(!IsDirty)
+                    {
+                        CreateTexture();
+                    }
+
+                    _destinationHasChanged = false;
+                }
+
                 if (IsDirty && IsLoaded)
                 {
                     UpdateFlow();
@@ -111,234 +136,33 @@ namespace DwarfMine.States.StateImplementation.Game.Components.RegionLayers
 
         private void UpdateFlow()
         {
-            if(!_destination.HasValue)
+            _flowDirections.Clear();
+
+            _flowDirections.Add(Direction.NORTH_WEST, PathFindingService.ComputeFlow(_tileCosts, 0, 0));
+            _flowDirections.Add(Direction.NORTH, PathFindingService.ComputeFlow(_tileCosts, Constants.REGION_WIDTH / 2, 0));
+            _flowDirections.Add(Direction.NORTH_EAST, PathFindingService.ComputeFlow(_tileCosts, Constants.REGION_WIDTH-1, 0));
+            _flowDirections.Add(Direction.EAST, PathFindingService.ComputeFlow(_tileCosts, 0, Constants.REGION_HEIGHT / 2));
+            _flowDirections.Add(Direction.WEST, PathFindingService.ComputeFlow(_tileCosts, Constants.REGION_WIDTH-1, Constants.REGION_HEIGHT / 2));
+            _flowDirections.Add(Direction.SOUTH_WEST, PathFindingService.ComputeFlow(_tileCosts, 0, Constants.REGION_HEIGHT-1));
+            _flowDirections.Add(Direction.SOUTH, PathFindingService.ComputeFlow(_tileCosts, Constants.REGION_WIDTH / 2, Constants.REGION_HEIGHT-1));
+            _flowDirections.Add(Direction.SOUTH_EAST, PathFindingService.ComputeFlow(_tileCosts, Constants.REGION_WIDTH-1, Constants.REGION_HEIGHT-1));
+        }
+
+        private void UpdateFlowInRegion()
+        {
+            if (!_destination.HasValue)
             {
                 return;
             }
 
-            ResetValues();
-
-            //Compute integration field
-            var listOpen = new Queue<Point>();
-
-            _tileValues[_destination.Value.X, _destination.Value.Y] = 0;
-
-            listOpen.Enqueue(_destination.Value);
-
-            while(listOpen.Any())
+            if(_flowDirections.ContainsKey(Direction.CENTER))
             {
-                var currentPosition = listOpen.Dequeue();
-                var currentValue = _tileValues[currentPosition.X, currentPosition.Y];
-                var currentCost = _tileCosts[currentPosition.X, currentPosition.Y];
-
-                var neighborsN = currentPosition + new Point(0, -1);
-                var neighborsS = currentPosition + new Point(0, 1);
-                var neighborsW = currentPosition + new Point(-1, 0);
-                var neighborsE = currentPosition + new Point(1, 0);
-
-                //unsigned int endNodeCost = getValueByIndex(currentID)                         
-                            //+ getCostField()-&gt;getCostByIndex(neighbors[i]);
-                if (neighborsN.Y >= 0)
-                {
-                    var costN = _tileCosts[neighborsN.X, neighborsN.Y];
-
-                    if (costN < 255)
-                    {
-                        var valueN = currentValue + (currentCost > costN ? currentCost : costN);
-
-                        if (valueN < _tileValues[neighborsN.X, neighborsN.Y])
-                        {
-                            if (!listOpen.Any(p => p.X == neighborsN.X && p.Y == neighborsN.Y))
-                            {
-                                listOpen.Enqueue(neighborsN);
-                            }
-
-                            _tileValues[neighborsN.X, neighborsN.Y] = valueN;
-                        }
-                    }
-                }
-                if (neighborsS.Y < Constants.REGION_HEIGHT)
-                {
-                    var costS = _tileCosts[neighborsS.X, neighborsS.Y];
-
-                    if (costS < 255)
-                    {
-                        var valueS = currentValue + (currentCost > costS ? currentCost : costS);
-
-                        if (valueS < _tileValues[neighborsS.X, neighborsS.Y])
-                        {
-                            if (!listOpen.Any(p => p.X == neighborsS.X && p.Y == neighborsS.Y))
-                            {
-                                listOpen.Enqueue(neighborsS);
-                            }
-
-                            _tileValues[neighborsS.X, neighborsS.Y] = valueS;
-                        }
-                    }
-                }
-                if (neighborsW.X >= 0)
-                {
-                    var costW = _tileCosts[neighborsW.X, neighborsW.Y];
-
-                    if (costW < 255)
-                    {
-                        var valueW = currentValue + (currentCost > costW ? currentCost : costW);
-
-                        if (valueW < _tileValues[neighborsW.X, neighborsW.Y])
-                        {
-                            if (!listOpen.Any(p => p.X == neighborsW.X && p.Y == neighborsW.Y))
-                            {
-                                listOpen.Enqueue(neighborsW);
-                            }
-
-                            _tileValues[neighborsW.X, neighborsW.Y] = valueW;
-                        }
-                    }
-                }
-                if (neighborsE.X < Constants.REGION_WIDTH)
-                {
-                    var costE = _tileCosts[neighborsE.X, neighborsE.Y];
-
-                    if (costE < 255)
-                    {
-                        var valueE = currentValue + (currentCost > costE ? currentCost : costE);
-
-                        if (valueE < _tileValues[neighborsE.X, neighborsE.Y])
-                        {
-                            if (!listOpen.Any(p => p.X == neighborsE.X && p.Y == neighborsE.Y))
-                            {
-                                listOpen.Enqueue(neighborsE);
-                            }
-
-                            _tileValues[neighborsE.X, neighborsE.Y] = valueE;
-                        }
-                    }
-                }
+                _flowDirections[Direction.CENTER] = PathFindingService.ComputeFlow(_tileCosts, _destination.Value.X, _destination.Value.Y);
             }
-
-            //Compute flow field
-
-            for (int y = 0; y < Constants.REGION_HEIGHT; y++)
+            else
             {
-                for (int x = 0; x < Constants.REGION_WIDTH; x++)
-                {
-                    _flows[x, y] = ComputeFlowDirection(x, y);
-                }
+                _flowDirections.Add(Direction.CENTER, PathFindingService.ComputeFlow(_tileCosts, _destination.Value.X, _destination.Value.Y));
             }
-
-        }
-
-        private Vector2 ComputeFlowDirection(int x, int y)
-        {
-            var currentPosition = new Point(x, y);
-            var neighborsN = currentPosition + new Point(0, -1);
-            var neighborsS = currentPosition + new Point(0, 1);
-            var neighborsW = currentPosition + new Point(-1, 0);
-            var neighborsE = currentPosition + new Point(1, 0);
-            var neighborsNE = currentPosition + new Point(1, -1);
-            var neighborsNW = currentPosition + new Point(-1, -1);
-            var neighborsSE = currentPosition + new Point(1, 1);
-            var neighborsSW = currentPosition + new Point(-1, 1);
-
-            var currentValue = _tileValues[x, y];
-
-            if(currentValue == 65535 || currentValue == 0)
-            {
-                return Vector2.Zero;
-            }
-
-            var minValue = int.MaxValue;
-            Point? minNeighbors = null;
-
-            if (neighborsN.Y >= 0)
-            {
-                var value = _tileValues[neighborsN.X, neighborsN.Y];
-
-                if (value < minValue)
-                {
-                    minValue = value;
-                    minNeighbors = neighborsN;
-                }
-            }
-            if (neighborsS.Y < Constants.REGION_HEIGHT)
-            {
-                var value = _tileValues[neighborsS.X, neighborsS.Y];
-
-                if (value < minValue)
-                {
-                    minValue = value;
-                    minNeighbors = neighborsS;
-                }
-            }
-            if (neighborsW.X >= 0)
-            {
-                var value = _tileValues[neighborsW.X, neighborsW.Y];
-
-                if (value < minValue)
-                {
-                    minValue = value;
-                    minNeighbors = neighborsW;
-                }
-            }
-            if (neighborsE.X < Constants.REGION_WIDTH)
-            {
-                var value = _tileValues[neighborsE.X, neighborsE.Y];
-
-                if (value < minValue)
-                {
-                    minValue = value;
-                    minNeighbors = neighborsE;
-                }
-            }
-            if (neighborsNW.X >= 0 && neighborsNW.Y >= 0)
-            {
-                var value = _tileValues[neighborsNW.X, neighborsNW.Y];
-
-                if (value < minValue)
-                {
-                    minValue = value;
-                    minNeighbors = neighborsNW;
-                }
-            }
-            if (neighborsNE.X < Constants.REGION_WIDTH && neighborsNE.Y >= 0)
-            {
-                var value = _tileValues[neighborsNE.X, neighborsNE.Y];
-
-                if (value < minValue)
-                {
-                    minValue = value;
-                    minNeighbors = neighborsNE;
-                }
-            }
-            if (neighborsSW.X >= 0 && neighborsSW.Y < Constants.REGION_HEIGHT)
-            {
-                var value = _tileValues[neighborsSW.X, neighborsSW.Y];
-
-                if (value < minValue)
-                {
-                    minValue = value;
-                    minNeighbors = neighborsSW;
-                }
-            }
-            if (neighborsSE.X < Constants.REGION_WIDTH && neighborsSE.Y < Constants.REGION_HEIGHT)
-            {
-                var value = _tileValues[neighborsSE.X, neighborsSE.Y];
-
-                if (value < minValue)
-                {
-                    minValue = value;
-                    minNeighbors = neighborsSE;
-                }
-            }
-
-            if(minNeighbors != null)
-            {
-                var v = (minNeighbors.Value.ToVector2() - currentPosition.ToVector2());
-                v.Normalize();
-                return v;
-            }
-
-            return Vector2.Zero;
         }
 
         private void CreateTexture()
@@ -355,32 +179,54 @@ namespace DwarfMine.States.StateImplementation.Game.Components.RegionLayers
 
             var blanktexture = TextureManager.Instance.GetTexture("blank");
 
-            for (int y = 0; y < Constants.REGION_HEIGHT; y++)
+            if (_flowDirections.ContainsKey(Direction.NORTH))
             {
-                for (int x = 0; x < Constants.REGION_WIDTH; x++)
+                var flow = _flowDirections[Direction.NORTH];
+
+                for (int y = 0; y < Constants.REGION_HEIGHT; y++)
                 {
-                    var value = _tileValues[x, y];
-
-                    //var color = new Color(Color.Red, value * 5 / 256f);
-
-                    //customSpriteBatch.Draw(blanktexture, new Rectangle(
-                    //    x * Constants.TILE_WIDTH, y * Constants.TILE_HEIGHT,
-                    //    Constants.TILE_WIDTH, Constants.TILE_HEIGHT
-                    //    ), color);
-
-                    var direction = _flows[x, y];
-
-                    if (direction != Vector2.Zero)
+                    for (int x = 0; x < Constants.REGION_WIDTH; x++)
                     {
-                        var currentPosition = new Vector2(x * Constants.TILE_WIDTH + Constants.TILE_HALF_WIDTH, y * Constants.TILE_HEIGHT + Constants.TILE_HALF_HEIGHT);
-                        var nextPosition = currentPosition + (direction * new Vector2(Constants.TILE_WIDTH, Constants.TILE_HEIGHT) / 2f);
+                        var direction = flow[x, y];
 
-                        customSpriteBatch.Draw(blanktexture, new Rectangle(
-                            (int)currentPosition.X - 3, (int)currentPosition.Y - 3,
-                            6, 6
-                            ), Color.Cyan);
+                        if (direction != Vector2.Zero)
+                        {
+                            var currentPosition = new Vector2(x * Constants.TILE_WIDTH + Constants.TILE_HALF_WIDTH, y * Constants.TILE_HEIGHT + Constants.TILE_HALF_HEIGHT);
+                            var nextPosition = currentPosition + (direction * new Vector2(Constants.TILE_WIDTH, Constants.TILE_HEIGHT) / 2f);
 
-                        customSpriteBatch.DrawLine(currentPosition, nextPosition, Color.Cyan, 2);
+                            customSpriteBatch.Draw(blanktexture, new Rectangle(
+                                (int)currentPosition.X - 3, (int)currentPosition.Y - 3,
+                                6, 6
+                                ), Color.Cyan);
+
+                            customSpriteBatch.DrawLine(currentPosition, nextPosition, Color.Cyan, 2);
+                        }
+                    }
+                }
+            }
+
+            if (_flowDirections.ContainsKey(Direction.CENTER))
+            {
+                var flow = _flowDirections[Direction.CENTER];
+
+                for (int y = 0; y < Constants.REGION_HEIGHT; y++)
+                {
+                    for (int x = 0; x < Constants.REGION_WIDTH; x++)
+                    {
+                        var direction = flow[x, y];
+
+                        if (direction != Vector2.Zero)
+                        {
+                            var currentPosition = new Vector2(x * Constants.TILE_WIDTH + Constants.TILE_HALF_WIDTH, y * Constants.TILE_HEIGHT + Constants.TILE_HALF_HEIGHT);
+                            var nextPosition = currentPosition + (direction * new Vector2(Constants.TILE_WIDTH, Constants.TILE_HEIGHT) / 2f);
+
+                            customSpriteBatch.Draw(blanktexture, new Rectangle(
+                                (int)currentPosition.X - 3, (int)currentPosition.Y - 3,
+                                6, 6
+                                ), Color.Orange);
+
+                            customSpriteBatch.DrawLine(currentPosition, nextPosition, Color.Orange, 2);
+                        }
                     }
                 }
             }

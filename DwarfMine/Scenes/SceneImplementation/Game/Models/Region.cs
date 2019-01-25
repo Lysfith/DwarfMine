@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DwarfMine.States.StateImplementation.Game.Components
+namespace DwarfMine.States.StateImplementation.Game.Models
 {
     public class Region
     {
@@ -136,6 +136,11 @@ namespace DwarfMine.States.StateImplementation.Game.Components
             var layer = _layers[RegionLayer.LayerType.COLLISION] as RegionLayerCollision;
 
             return layer.GetCollision(x, y);
+        }
+
+        public T GetLayer<T>(RegionLayer.LayerType type) where T : RegionLayer
+        {
+            return _layers[type] as T;
         }
     }
 }

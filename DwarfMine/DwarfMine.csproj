@@ -19,7 +19,6 @@
 
   <ItemGroup>
     <Folder Include="Libs\" />
-    <Folder Include="Scenes\SceneImplementation\Game\Systems\" />
   </ItemGroup>
 
   <ItemGroup>
