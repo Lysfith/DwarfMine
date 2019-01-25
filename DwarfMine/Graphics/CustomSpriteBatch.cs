@@ -126,6 +126,13 @@ namespace DwarfMine.Graphics
             Draw(TextureManager.Instance.GetTexture("blank"), point, null, color, angle, origin, scale, SpriteEffects.None, 0);
         }
 
+        public void DrawLine(Vector2 point1, Vector2 point2, Color color, float thickness = 1f)
+        {
+            var distance = Vector2.Distance(point1, point2);
+            var angle = (float)Math.Atan2(point2.Y - point1.Y, point2.X - point1.X);
+            DrawLine(point1, distance, angle, color, thickness);
+        }
+
         public void DrawRectangle(Rectangle rectangle, int width, Color color)
         {
             var blankTexture = TextureManager.Instance.GetTexture("blank");

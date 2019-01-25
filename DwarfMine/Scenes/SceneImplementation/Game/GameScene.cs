@@ -63,9 +63,9 @@ namespace DwarfMine.States.StateImplementation.Game
 
             _map = new Map();
 
-            for (int y = 0; y < 10; y++)
+            for (int y = 0; y < 1; y++)
             {
-                for (int x = 0; x < 10; x++)
+                for (int x = 0; x < 1; x++)
                 {
                     _map.CreateRegion(x, y);
                 }

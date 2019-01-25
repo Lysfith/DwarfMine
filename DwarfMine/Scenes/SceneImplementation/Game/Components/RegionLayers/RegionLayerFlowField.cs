@@ -11,27 +11,24 @@ namespace DwarfMine.States.StateImplementation.Game.Components.RegionLayers
 {
     public class RegionLayerFlowField : RegionLayer
     {
-        public enum FlowDirection
-        {
-            TOP_LEFT, TOP, TOP_RIGHT,
-            LEFT, CENTER, RIGHT,
-            BOTTOM_LEFT, BOTTOM, BOTTOM_RIGHT
-        }
-
         private Texture2D _texture;
 
-        private int[,] _tileCosts;
-        private FlowDirection[,] _flows;
+        private int[,] _tileValues;
+        private byte[,] _tileCosts;
+        private Vector2[,] _flows;
         private Point? _destination;
 
         public RegionLayerFlowField(Rectangle rectangle)
             : base(LayerType.FLOW_FIELD, rectangle)
         {
-            _flows = new FlowDirection[Constants.REGION_WIDTH, Constants.REGION_HEIGHT];
-            _tileCosts = new int[Constants.REGION_WIDTH, Constants.REGION_HEIGHT];
+            _flows = new Vector2[Constants.REGION_WIDTH, Constants.REGION_HEIGHT];
+            _tileValues = new int[Constants.REGION_WIDTH, Constants.REGION_HEIGHT];
+            _tileCosts = new byte[Constants.REGION_WIDTH, Constants.REGION_HEIGHT];
+
+            ResetCosts();
         }
 
-        public void SetTileCost(int x, int y, int value)
+        public void SetTileCost(int x, int y, byte value)
         {
             var oldValue = _tileCosts[x, y];
 
@@ -45,6 +42,28 @@ namespace DwarfMine.States.StateImplementation.Game.Components.RegionLayers
         public int GetTileCost(int x, int y)
         {
             return _tileCosts[x, y];
+        }
+
+        private void ResetCosts()
+        {
+            for (int y = 0; y < Constants.REGION_HEIGHT; y++)
+            {
+                for (int x = 0; x < Constants.REGION_WIDTH; x++)
+                {
+                    _tileCosts[x, y] = 1;
+                }
+            }
+        }
+
+        private void ResetValues()
+        {
+            for (int y = 0; y < Constants.REGION_HEIGHT; y++)
+            {
+                for (int x = 0; x < Constants.REGION_WIDTH; x++)
+                {
+                    _tileValues[x, y] = 65535;
+                }
+            }
         }
 
         public void SetDestination(int x, int y)
@@ -97,136 +116,229 @@ namespace DwarfMine.States.StateImplementation.Game.Components.RegionLayers
                 return;
             }
 
-            for(int y = 0; y < Constants.REGION_HEIGHT; y++)
-            {
-                for (int x = 0; x < Constants.REGION_WIDTH; x++)
-                {
-                    _tileCosts[x, y] = 256;
-                }
-            }
+            ResetValues();
 
+            //Compute integration field
             var listOpen = new Queue<Point>();
 
-            _tileCosts[_destination.Value.X, _destination.Value.Y] = 0;
+            _tileValues[_destination.Value.X, _destination.Value.Y] = 0;
 
             listOpen.Enqueue(_destination.Value);
 
             while(listOpen.Any())
             {
                 var currentPosition = listOpen.Dequeue();
-                var currentValue = _tileCosts[currentPosition.X, currentPosition.Y];
+                var currentValue = _tileValues[currentPosition.X, currentPosition.Y];
+                var currentCost = _tileCosts[currentPosition.X, currentPosition.Y];
 
                 var neighborsN = currentPosition + new Point(0, -1);
                 var neighborsS = currentPosition + new Point(0, 1);
                 var neighborsW = currentPosition + new Point(-1, 0);
                 var neighborsE = currentPosition + new Point(1, 0);
 
-                if(neighborsN.Y > 0)
+                //unsigned int endNodeCost = getValueByIndex(currentID)                         
+                            //+ getCostField()-&gt;getCostByIndex(neighbors[i]);
+                if (neighborsN.Y >= 0)
                 {
-                    var costN = currentValue + 1 - 1;
-                    
-                    if (costN < _tileCosts[neighborsN.X, neighborsN.Y])
-                    {
-                        if(!listOpen.Any(p => p.X == neighborsN.X && p.Y == neighborsN.Y))
-                        {
-                            listOpen.Enqueue(neighborsN);
-                        }
+                    var costN = _tileCosts[neighborsN.X, neighborsN.Y];
 
-                        _tileCosts[neighborsN.X, neighborsN.Y] = costN;
+                    if (costN < 255)
+                    {
+                        var valueN = currentValue + (currentCost > costN ? currentCost : costN);
+
+                        if (valueN < _tileValues[neighborsN.X, neighborsN.Y])
+                        {
+                            if (!listOpen.Any(p => p.X == neighborsN.X && p.Y == neighborsN.Y))
+                            {
+                                listOpen.Enqueue(neighborsN);
+                            }
+
+                            _tileValues[neighborsN.X, neighborsN.Y] = valueN;
+                        }
                     }
                 }
                 if (neighborsS.Y < Constants.REGION_HEIGHT)
                 {
-                    var costS = currentValue + 1 - 1;
+                    var costS = _tileCosts[neighborsS.X, neighborsS.Y];
 
-                    if (costS < _tileCosts[neighborsS.X, neighborsS.Y])
+                    if (costS < 255)
                     {
-                        if (!listOpen.Any(p => p.X == neighborsS.X && p.Y == neighborsS.Y))
-                        {
-                            listOpen.Enqueue(neighborsS);
-                        }
+                        var valueS = currentValue + (currentCost > costS ? currentCost : costS);
 
-                        _tileCosts[neighborsS.X, neighborsS.Y] = costS;
+                        if (valueS < _tileValues[neighborsS.X, neighborsS.Y])
+                        {
+                            if (!listOpen.Any(p => p.X == neighborsS.X && p.Y == neighborsS.Y))
+                            {
+                                listOpen.Enqueue(neighborsS);
+                            }
+
+                            _tileValues[neighborsS.X, neighborsS.Y] = valueS;
+                        }
                     }
                 }
-                if (neighborsW.X > 0)
+                if (neighborsW.X >= 0)
                 {
-                    var costW = currentValue + 1 - 1;
+                    var costW = _tileCosts[neighborsW.X, neighborsW.Y];
 
-                    if (costW < _tileCosts[neighborsW.X, neighborsW.Y])
+                    if (costW < 255)
                     {
-                        if (!listOpen.Any(p => p.X == neighborsW.X && p.Y == neighborsW.Y))
-                        {
-                            listOpen.Enqueue(neighborsW);
-                        }
+                        var valueW = currentValue + (currentCost > costW ? currentCost : costW);
 
-                        _tileCosts[neighborsW.X, neighborsW.Y] = costW;
+                        if (valueW < _tileValues[neighborsW.X, neighborsW.Y])
+                        {
+                            if (!listOpen.Any(p => p.X == neighborsW.X && p.Y == neighborsW.Y))
+                            {
+                                listOpen.Enqueue(neighborsW);
+                            }
+
+                            _tileValues[neighborsW.X, neighborsW.Y] = valueW;
+                        }
                     }
                 }
                 if (neighborsE.X < Constants.REGION_WIDTH)
                 {
-                    var costE = currentValue + 1 - 1;
+                    var costE = _tileCosts[neighborsE.X, neighborsE.Y];
 
-                    if (costE < _tileCosts[neighborsE.X, neighborsE.Y])
+                    if (costE < 255)
                     {
-                        if (!listOpen.Any(p => p.X == neighborsE.X && p.Y == neighborsE.Y))
-                        {
-                            listOpen.Enqueue(neighborsE);
-                        }
+                        var valueE = currentValue + (currentCost > costE ? currentCost : costE);
 
-                        _tileCosts[neighborsE.X, neighborsE.Y] = costE;
+                        if (valueE < _tileValues[neighborsE.X, neighborsE.Y])
+                        {
+                            if (!listOpen.Any(p => p.X == neighborsE.X && p.Y == neighborsE.Y))
+                            {
+                                listOpen.Enqueue(neighborsE);
+                            }
+
+                            _tileValues[neighborsE.X, neighborsE.Y] = valueE;
+                        }
                     }
                 }
-
-
             }
 
-            /*
-                unsigned int targetID = targetY * mArrayWidth + targetX;
- 
-                resetField();//Set total cost in all cells to 65535
-                list openList;
- 
-                //Set goal node cost to 0 and add it to the open list
-                setValueAt(targetID, 0);
-                openList.push_back(targetID);
- 
-                while (openList.size() &gt; 0)
+            //Compute flow field
+
+            for (int y = 0; y < Constants.REGION_HEIGHT; y++)
+            {
+                for (int x = 0; x < Constants.REGION_WIDTH; x++)
                 {
-                    //Get the next node in the open list
-                    unsigned currentID = openList.front();
-                    openList.pop_front();
- 
-                    unsigned short currentX = currentID % mArrayWidth;
-                    unsigned short currentY = currentID / mArrayWidth;
- 
-                    //Get the N, E, S, and W neighbors of the current node
-                    std::vector neighbors = getNeighbors(currentX, currentY);
-                    int neighborCount = neighbors.size();
- 
-                    //Iterate through the neighbors of the current node
-                    for (int i = 0; i &lt; neighborCount; i++)         {             
-                        //Calculate the new cost of the neighbor node             
-                        // based on the cost of the current node and the weight of the next node             
-                        unsigned int endNodeCost = getValueByIndex(currentID)                          
-                        + getCostField()-&gt;getCostByIndex(neighbors[i]);
- 
-                        //If a shorter path has been found, add the node into the open list
-                        if (endNodeCost &lt; getValueByIndex(neighbors[i]))
-                        {
-                            //Check if the neighbor cell is already in the list.
-                            //If it is not then add it to the end of the list.
-                            if (!checkIfContains(neighbors[i], openList))
-                            {
-                                openList.push_back(neighbors[i]);
-                            }
- 
-                            //Set the new cost of the neighbor node.
-                            setValueAt(neighbors[i], endNodeCost);
-                        }
-                    }
+                    _flows[x, y] = ComputeFlowDirection(x, y);
                 }
-             */
+            }
+
+        }
+
+        private Vector2 ComputeFlowDirection(int x, int y)
+        {
+            var currentPosition = new Point(x, y);
+            var neighborsN = currentPosition + new Point(0, -1);
+            var neighborsS = currentPosition + new Point(0, 1);
+            var neighborsW = currentPosition + new Point(-1, 0);
+            var neighborsE = currentPosition + new Point(1, 0);
+            var neighborsNE = currentPosition + new Point(1, -1);
+            var neighborsNW = currentPosition + new Point(-1, -1);
+            var neighborsSE = currentPosition + new Point(1, 1);
+            var neighborsSW = currentPosition + new Point(-1, 1);
+
+            var currentValue = _tileValues[x, y];
+
+            if(currentValue == 65535 || currentValue == 0)
+            {
+                return Vector2.Zero;
+            }
+
+            var minValue = int.MaxValue;
+            Point? minNeighbors = null;
+
+            if (neighborsN.Y >= 0)
+            {
+                var value = _tileValues[neighborsN.X, neighborsN.Y];
+
+                if (value < minValue)
+                {
+                    minValue = value;
+                    minNeighbors = neighborsN;
+                }
+            }
+            if (neighborsS.Y < Constants.REGION_HEIGHT)
+            {
+                var value = _tileValues[neighborsS.X, neighborsS.Y];
+
+                if (value < minValue)
+                {
+                    minValue = value;
+                    minNeighbors = neighborsS;
+                }
+            }
+            if (neighborsW.X >= 0)
+            {
+                var value = _tileValues[neighborsW.X, neighborsW.Y];
+
+                if (value < minValue)
+                {
+                    minValue = value;
+                    minNeighbors = neighborsW;
+                }
+            }
+            if (neighborsE.X < Constants.REGION_WIDTH)
+            {
+                var value = _tileValues[neighborsE.X, neighborsE.Y];
+
+                if (value < minValue)
+                {
+                    minValue = value;
+                    minNeighbors = neighborsE;
+                }
+            }
+            if (neighborsNW.X >= 0 && neighborsNW.Y >= 0)
+            {
+                var value = _tileValues[neighborsNW.X, neighborsNW.Y];
+
+                if (value < minValue)
+                {
+                    minValue = value;
+                    minNeighbors = neighborsNW;
+                }
+            }
+            if (neighborsNE.X < Constants.REGION_WIDTH && neighborsNE.Y >= 0)
+            {
+                var value = _tileValues[neighborsNE.X, neighborsNE.Y];
+
+                if (value < minValue)
+                {
+                    minValue = value;
+                    minNeighbors = neighborsNE;
+                }
+            }
+            if (neighborsSW.X >= 0 && neighborsSW.Y < Constants.REGION_HEIGHT)
+            {
+                var value = _tileValues[neighborsSW.X, neighborsSW.Y];
+
+                if (value < minValue)
+                {
+                    minValue = value;
+                    minNeighbors = neighborsSW;
+                }
+            }
+            if (neighborsSE.X < Constants.REGION_WIDTH && neighborsSE.Y < Constants.REGION_HEIGHT)
+            {
+                var value = _tileValues[neighborsSE.X, neighborsSE.Y];
+
+                if (value < minValue)
+                {
+                    minValue = value;
+                    minNeighbors = neighborsSE;
+                }
+            }
+
+            if(minNeighbors != null)
+            {
+                var v = (minNeighbors.Value.ToVector2() - currentPosition.ToVector2());
+                v.Normalize();
+                return v;
+            }
+
+            return Vector2.Zero;
         }
 
         private void CreateTexture()
@@ -247,21 +359,31 @@ namespace DwarfMine.States.StateImplementation.Game.Components.RegionLayers
             {
                 for (int x = 0; x < Constants.REGION_WIDTH; x++)
                 {
-                    var value = _tileCosts[x, y];
+                    var value = _tileValues[x, y];
 
-                    var color = new Color(Color.Red, value / 256);
+                    //var color = new Color(Color.Red, value * 5 / 256f);
 
-                    customSpriteBatch.Draw(blanktexture, new Rectangle(
-                        x * Constants.TILE_WIDTH, y * Constants.TILE_HEIGHT,
-                        Constants.TILE_WIDTH, Constants.TILE_HEIGHT
-                        ), color);
+                    //customSpriteBatch.Draw(blanktexture, new Rectangle(
+                    //    x * Constants.TILE_WIDTH, y * Constants.TILE_HEIGHT,
+                    //    Constants.TILE_WIDTH, Constants.TILE_HEIGHT
+                    //    ), color);
+
+                    var direction = _flows[x, y];
+
+                    if (direction != Vector2.Zero)
+                    {
+                        var currentPosition = new Vector2(x * Constants.TILE_WIDTH + Constants.TILE_HALF_WIDTH, y * Constants.TILE_HEIGHT + Constants.TILE_HALF_HEIGHT);
+                        var nextPosition = currentPosition + (direction * new Vector2(Constants.TILE_WIDTH, Constants.TILE_HEIGHT) / 2f);
+
+                        customSpriteBatch.Draw(blanktexture, new Rectangle(
+                            (int)currentPosition.X - 3, (int)currentPosition.Y - 3,
+                            6, 6
+                            ), Color.Cyan);
+
+                        customSpriteBatch.DrawLine(currentPosition, nextPosition, Color.Cyan, 2);
+                    }
                 }
             }
-
-            //foreach (var rect in _rectangleWalkables)
-            //{
-            //    _cellWalkable.Draw(customSpriteBatch, rect);
-            //}
 
             customSpriteBatch.End();
 

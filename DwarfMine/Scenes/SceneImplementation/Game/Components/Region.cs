@@ -124,9 +124,11 @@ namespace DwarfMine.States.StateImplementation.Game.Components
 
         public void SetCollision(int x, int y, bool value)
         {
-            var layer = _layers[RegionLayer.LayerType.COLLISION] as RegionLayerCollision;
+            var layerCollision = _layers[RegionLayer.LayerType.COLLISION] as RegionLayerCollision;
+            var layerFlowField = _layers[RegionLayer.LayerType.FLOW_FIELD] as RegionLayerFlowField;
 
-            layer.SetCollision(x, y, value);
+            layerCollision.SetCollision(x, y, value);
+            layerFlowField.SetTileCost(x, y, 255);
         }
 
         public bool GetCollision(int x, int y)
