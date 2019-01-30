@@ -38,7 +38,7 @@ namespace DwarfMine.States.StateImplementation.Game.Models
             };
         }
 
-        public Point GetCellPosition(int xWorld, int yWorld)
+        public Point GetCellPositionFromWorldPosition(int xWorld, int yWorld)
         {
             var positionXInRegion = xWorld - X;
             var positionYInRegion = yWorld - Y;
@@ -48,7 +48,17 @@ namespace DwarfMine.States.StateImplementation.Game.Models
                 (int)(positionYInRegion / Constants.TILE_HEIGHT) * Constants.TILE_HEIGHT + Y + Constants.TILE_HALF_HEIGHT);
         }
 
-        public Point GetCellIndex(int xWorld, int yWorld)
+        public Point GetCellPositionFromCellIndex(int x, int y)
+        {
+            var positionXInRegion = X * Constants.REGION_WIDTH * Constants.TILE_WIDTH;
+            var positionYInRegion = Y * Constants.REGION_HEIGHT * Constants.TILE_HEIGHT;
+
+            return new Point(
+                (int)(positionXInRegion + x * Constants.TILE_WIDTH),
+                (int)(positionYInRegion + y * Constants.TILE_HEIGHT));
+        }
+
+        public Point GetCellIndexFromWorldPosition(int xWorld, int yWorld)
         {
             var positionXInRegion = xWorld - X;
             var positionYInRegion = yWorld - Y;
@@ -141,6 +151,13 @@ namespace DwarfMine.States.StateImplementation.Game.Models
         public T GetLayer<T>(RegionLayer.LayerType type) where T : RegionLayer
         {
             return _layers[type] as T;
+        }
+
+        public byte[,] GetCosts()
+        {
+            var layer = _layers[RegionLayer.LayerType.FLOW_FIELD] as RegionLayerFlowField;
+
+            return layer.GetCosts();
         }
     }
 }

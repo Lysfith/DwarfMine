@@ -1,12 +1,14 @@
 ﻿using DwarfMine.Graphics;
 using DwarfMine.Managers;
 using DwarfMine.Scenes.SceneImplementation.Game.Systems;
+using DwarfMine.Services;
 using DwarfMine.States.StateImplementation.Game.Components.RegionLayers;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 using MonoGame.Extended.Sprites;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace DwarfMine.States.StateImplementation.Game.Models
@@ -16,30 +18,37 @@ namespace DwarfMine.States.StateImplementation.Game.Models
         public Point? Destination { get; protected set; }
         public Vector2 Position { get; protected set; }
 
+        public Queue<Point> _path;
+
         public Character(int x, int y)
-            :base(x, y, EnumSprite.DEV)
+            : base(x, y, EnumSprite.DEV)
         {
             Position = new Vector2(X, Y);
         }
 
         public override void Update(GameTime time)
         {
-            if(Destination.HasValue && new Point(X, Y) != Destination.Value)
+            if (_path != null && _path.Any())
             {
-                //Move
-                var region = MapSystem.Instance.GetRegion(X, Y);
-                var layer = region.GetLayer<RegionLayerFlowField>(RegionLayer.LayerType.FLOW_FIELD);
+                var nextDestination = _path.Peek();
 
-                var positionInRegion = region.GetCellIndex(X, Y);
+                if ((nextDestination.ToVector2() - Position).Length() < 1f)
+                {
+                    _path.Dequeue();
+                }
+                else
+                {
+                    var direction = (nextDestination.ToVector2() - Position);
 
-                var direction = layer.GetDirection(positionInRegion.X, positionInRegion.Y);
+                    direction /= direction.Length();
 
-                var nextPosition = Position + direction * (float)time.ElapsedGameTime.TotalSeconds * 100;
+                    var nextPosition = Position + direction * (float)time.ElapsedGameTime.TotalSeconds * 100f;
 
-                Position = nextPosition;
+                    Position = nextPosition;
 
-                X = (int)Position.X;
-                Y = (int)Position.Y;
+                    X = (int)Position.X;
+                    Y = (int)Position.Y;
+                }
             }
         }
 
@@ -50,7 +59,47 @@ namespace DwarfMine.States.StateImplementation.Game.Models
 
         public void SetDestination(Point? destination)
         {
-            Destination = destination;
+            var region = MapSystem.Instance.GetRegion(destination.Value.X, destination.Value.Y);
+            var positionInWorld = region.GetCellPositionFromWorldPosition(destination.Value.X, destination.Value.Y);
+
+            Destination = positionInWorld;
+
+            CreatePath();
+        }
+
+        private void CreatePath()
+        {
+            _path = new Queue<Point>();
+
+            var region = MapSystem.Instance.GetRegion(X, Y);
+
+            var costs = region.GetCosts();
+
+            var destinationInRegion = region.GetCellIndexFromWorldPosition(Destination.Value.X, Destination.Value.Y);
+
+            var flows = PathFindingService.ComputeFlow(costs, destinationInRegion.X, destinationInRegion.Y);
+
+            var positionInRegion = region.GetCellIndexFromWorldPosition(X, Y);
+            var positionInWorld = region.GetCellPositionFromWorldPosition(X, Y);
+
+            _path.Enqueue(positionInWorld);
+
+            while(Destination != positionInWorld)
+            {
+                var direction = flows[positionInRegion.X, positionInRegion.Y];
+
+                if(direction == Vector2.Zero)
+                {
+                    break;
+                }
+
+                positionInRegion = (positionInRegion.ToVector2() + direction * 1.5f).ToPoint();
+                var newPosition = region.GetCellPositionFromCellIndex(positionInRegion.X, positionInRegion.Y);
+
+                var newPositionInWorld = region.GetCellPositionFromWorldPosition((int)newPosition.X, (int)newPosition.Y);
+
+                _path.Enqueue(newPositionInWorld);
+            }
         }
     }
 }

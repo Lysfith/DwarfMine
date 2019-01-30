@@ -74,7 +74,7 @@ namespace DwarfMine.Scenes.SceneImplementation.Game.Systems
 
             if (region != null)
             {
-                var cellIndex = region.GetCellIndex(x, y);
+                var cellIndex = region.GetCellIndexFromWorldPosition(x, y);
 
                 region.Select(cellIndex.X, cellIndex.Y);
             }
@@ -86,8 +86,8 @@ namespace DwarfMine.Scenes.SceneImplementation.Game.Systems
 
             if (region != null)
             {
-                var cell = region.GetCellPosition(x, y);
-                var cellIndex = region.GetCellIndex(x, y);
+                var cell = region.GetCellPositionFromWorldPosition(x, y);
+                var cellIndex = region.GetCellIndexFromWorldPosition(x, y);
                 x = cell.X;
                 y = cell.Y;
 

@@ -57,6 +57,11 @@ namespace DwarfMine.States.StateImplementation.Game.Components.RegionLayers
             return _tileCosts[x, y];
         }
 
+        public byte[,] GetCosts()
+        {
+            return _tileCosts;
+        }
+
         private void ResetCosts()
         {
             for (int y = 0; y < Constants.REGION_HEIGHT; y++)
@@ -179,31 +184,31 @@ namespace DwarfMine.States.StateImplementation.Game.Components.RegionLayers
 
             var blanktexture = TextureManager.Instance.GetTexture("blank");
 
-            if (_flowDirections.ContainsKey(Direction.NORTH))
-            {
-                var flow = _flowDirections[Direction.NORTH];
+            //if (_flowDirections.ContainsKey(Direction.NORTH))
+            //{
+            //    var flow = _flowDirections[Direction.NORTH];
 
-                for (int y = 0; y < Constants.REGION_HEIGHT; y++)
-                {
-                    for (int x = 0; x < Constants.REGION_WIDTH; x++)
-                    {
-                        var direction = flow[x, y];
+            //    for (int y = 0; y < Constants.REGION_HEIGHT; y++)
+            //    {
+            //        for (int x = 0; x < Constants.REGION_WIDTH; x++)
+            //        {
+            //            var direction = flow[x, y];
 
-                        if (direction != Vector2.Zero)
-                        {
-                            var currentPosition = new Vector2(x * Constants.TILE_WIDTH + Constants.TILE_HALF_WIDTH, y * Constants.TILE_HEIGHT + Constants.TILE_HALF_HEIGHT);
-                            var nextPosition = currentPosition + (direction * new Vector2(Constants.TILE_WIDTH, Constants.TILE_HEIGHT) / 2f);
+            //            if (direction != Vector2.Zero)
+            //            {
+            //                var currentPosition = new Vector2(x * Constants.TILE_WIDTH + Constants.TILE_HALF_WIDTH, y * Constants.TILE_HEIGHT + Constants.TILE_HALF_HEIGHT);
+            //                var nextPosition = currentPosition + (direction * new Vector2(Constants.TILE_WIDTH, Constants.TILE_HEIGHT) / 2f);
 
-                            customSpriteBatch.Draw(blanktexture, new Rectangle(
-                                (int)currentPosition.X - 3, (int)currentPosition.Y - 3,
-                                6, 6
-                                ), Color.Cyan);
+            //                customSpriteBatch.Draw(blanktexture, new Rectangle(
+            //                    (int)currentPosition.X - 3, (int)currentPosition.Y - 3,
+            //                    6, 6
+            //                    ), Color.Cyan);
 
-                            customSpriteBatch.DrawLine(currentPosition, nextPosition, Color.Cyan, 2);
-                        }
-                    }
-                }
-            }
+            //                customSpriteBatch.DrawLine(currentPosition, nextPosition, Color.Cyan, 2);
+            //            }
+            //        }
+            //    }
+            //}
 
             if (_flowDirections.ContainsKey(Direction.CENTER))
             {

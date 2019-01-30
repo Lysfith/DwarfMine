@@ -46,7 +46,7 @@ namespace DwarfMine.States.StateImplementation.Game.Models
 
             if(region != null)
             {
-                var cellIndex = region.GetCellIndex(x, y);
+                var cellIndex = region.GetCellIndexFromWorldPosition(x, y);
 
                 region.Select(cellIndex.X, cellIndex.Y);
             }

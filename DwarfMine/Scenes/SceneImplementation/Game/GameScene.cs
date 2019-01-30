@@ -29,7 +29,7 @@ namespace DwarfMine.States.StateImplementation.Game
         private PrimitiveRectangle _cellHighlight;
         private Point? _currentCellHovered;
 
-        private Character _character;
+        private List<Character> _characters;
 
         public GameScene()
         {
@@ -63,9 +63,7 @@ namespace DwarfMine.States.StateImplementation.Game
 
             MapSystem.Instance.Load(1, 1);
 
-            _character = new Models.Character(32 * 4 + 16, 32 * 5 + 16);
-
-            CharacterSystem.Instance.AddCharacter(_character);
+            _characters = new List<Character>();
 
             _cellHighlight = new PrimitiveRectangle(PrimitiveRectangle.Type.OUTLINE, Constants.TILE_WIDTH, Constants.TILE_HEIGHT, TextureManager.Instance.GetTexture("blank"), Color.Transparent, Color.Red, 1);
         }
@@ -135,7 +133,20 @@ namespace DwarfMine.States.StateImplementation.Game
 
                 var mousePositionWorld = camera.ScreenToWorld(mousePositionScreen.X, mousePositionScreen.Y);
 
-                MapSystem.Instance.AddObject((int)mousePositionWorld.X, (int)mousePositionWorld.Y);
+                //MapSystem.Instance.AddObject((int)mousePositionWorld.X, (int)mousePositionWorld.Y);
+
+                var region = MapSystem.Instance.GetRegion((int)mousePositionWorld.X, (int)mousePositionWorld.Y);
+                var cellIndex = region.GetCellIndexFromWorldPosition((int)mousePositionWorld.X, (int)mousePositionWorld.Y);
+                var isFree = !region.GetCollision(cellIndex.X, cellIndex.Y);
+
+                if (isFree)
+                {
+                    var character = new Models.Character((int)mousePositionWorld.X, (int)mousePositionWorld.Y);
+
+                    CharacterSystem.Instance.AddCharacter(character);
+
+                    _characters.Add(character);
+                }
             }
             else if(args.Button == MonoGame.Extended.Input.MouseButton.Middle)
             {
@@ -146,7 +157,10 @@ namespace DwarfMine.States.StateImplementation.Game
 
                 MapSystem.Instance.Select((int)mousePositionWorld.X, (int)mousePositionWorld.Y);
 
-                _character.SetDestination(mousePositionWorld.ToPoint());
+                foreach (var character in _characters)
+                {
+                    character.SetDestination(mousePositionWorld.ToPoint());
+                }
             }
         }
 
@@ -195,7 +209,7 @@ namespace DwarfMine.States.StateImplementation.Game
 
                 if (region != null)
                 {
-                    _currentCellHovered = region.GetCellPosition((int)mousePositionWorld.X, (int)mousePositionWorld.Y);
+                    _currentCellHovered = region.GetCellPositionFromWorldPosition((int)mousePositionWorld.X, (int)mousePositionWorld.Y);
                 }
                 else
                 {
