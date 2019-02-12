@@ -66,7 +66,11 @@ namespace DwarfMine.Managers
         {
             var directory = "Textures/Game/";
 
-            AddOrReplaceSprite(EnumSprite.DEV, new Sprite(new TextureRegion2D(TextureManager.Instance.GetTexture($"{directory}tiles"))));
+            var tiles = TextureManager.Instance.GetTexture($"{directory}tiles");
+
+            AddOrReplaceSprite(EnumSprite.DEV, new Sprite(new TextureRegion2D(tiles, new Rectangle(0, 0, 16, 16))));
+            AddOrReplaceSprite(EnumSprite.DEV2, new Sprite(new TextureRegion2D(tiles, new Rectangle(16, 0, 16, 16))));
+           
 
             //var outdoors = TextureManager.Instance.GetTexture($"{directory}OutdoorsTileset");
             //AddOrReplaceSprite(EnumSprite.GRASS_INNER_TOP_LEFT, new Sprite(new TextureRegion2D(outdoors, new Rectangle(0, 0, 16, 16))));

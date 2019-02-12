@@ -210,46 +210,46 @@ namespace DwarfMine.Services
                     minNeighbors = neighborsE;
                 }
             }
-            if (neighborsNW.X >= 0 && neighborsNW.Y >= 0)
-            {
-                var value = values[neighborsNW.X, neighborsNW.Y];
+            //if (neighborsNW.X >= 0 && neighborsNW.Y >= 0)
+            //{
+            //    var value = values[neighborsNW.X, neighborsNW.Y];
 
-                if (value < minValue)
-                {
-                    minValue = value;
-                    minNeighbors = neighborsNW;
-                }
-            }
-            if (neighborsNE.X < values.GetLength(0) && neighborsNE.Y >= 0)
-            {
-                var value = values[neighborsNE.X, neighborsNE.Y];
+            //    if (value < minValue)
+            //    {
+            //        minValue = value;
+            //        minNeighbors = neighborsNW;
+            //    }
+            //}
+            //if (neighborsNE.X < values.GetLength(0) && neighborsNE.Y >= 0)
+            //{
+            //    var value = values[neighborsNE.X, neighborsNE.Y];
 
-                if (value < minValue)
-                {
-                    minValue = value;
-                    minNeighbors = neighborsNE;
-                }
-            }
-            if (neighborsSW.X >= 0 && neighborsSW.Y < values.GetLength(1))
-            {
-                var value = values[neighborsSW.X, neighborsSW.Y];
+            //    if (value < minValue)
+            //    {
+            //        minValue = value;
+            //        minNeighbors = neighborsNE;
+            //    }
+            //}
+            //if (neighborsSW.X >= 0 && neighborsSW.Y < values.GetLength(1))
+            //{
+            //    var value = values[neighborsSW.X, neighborsSW.Y];
 
-                if (value < minValue)
-                {
-                    minValue = value;
-                    minNeighbors = neighborsSW;
-                }
-            }
-            if (neighborsSE.X < values.GetLength(0) && neighborsSE.Y < values.GetLength(1))
-            {
-                var value = values[neighborsSE.X, neighborsSE.Y];
+            //    if (value < minValue)
+            //    {
+            //        minValue = value;
+            //        minNeighbors = neighborsSW;
+            //    }
+            //}
+            //if (neighborsSE.X < values.GetLength(0) && neighborsSE.Y < values.GetLength(1))
+            //{
+            //    var value = values[neighborsSE.X, neighborsSE.Y];
 
-                if (value < minValue)
-                {
-                    minValue = value;
-                    minNeighbors = neighborsSE;
-                }
-            }
+            //    if (value < minValue)
+            //    {
+            //        minValue = value;
+            //        minNeighbors = neighborsSE;
+            //    }
+            //}
 
             if (minNeighbors != null)
             {

@@ -55,6 +55,16 @@ namespace DwarfMine.States.StateImplementation.Game.Models
         public override void Draw(CustomSpriteBatch spriteBatch, GameTime time)
         {
             base.Draw(spriteBatch, time);
+
+            if (_path != null && _path.Any())
+            {
+                var sprite = SpriteManager.Instance.GetSprite(EnumSprite.DEV2);
+
+                foreach (var p in _path)
+                {
+                    spriteBatch.Draw(sprite, p.ToVector2());
+                }
+            }
         }
 
         public void SetDestination(Point? destination)
@@ -93,12 +103,12 @@ namespace DwarfMine.States.StateImplementation.Game.Models
                     break;
                 }
 
-                positionInRegion = (positionInRegion.ToVector2() + direction * 1.5f).ToPoint();
+                positionInRegion = (positionInRegion.ToVector2() + direction * 1f).ToPoint();
                 var newPosition = region.GetCellPositionFromCellIndex(positionInRegion.X, positionInRegion.Y);
 
-                var newPositionInWorld = region.GetCellPositionFromWorldPosition((int)newPosition.X, (int)newPosition.Y);
+                positionInWorld = region.GetCellPositionFromWorldPosition((int)newPosition.X, (int)newPosition.Y);
 
-                _path.Enqueue(newPositionInWorld);
+                _path.Enqueue(positionInWorld);
             }
         }
     }

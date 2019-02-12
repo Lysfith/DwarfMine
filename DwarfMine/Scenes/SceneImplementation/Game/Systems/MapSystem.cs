@@ -95,9 +95,9 @@ namespace DwarfMine.Scenes.SceneImplementation.Game.Systems
                 {
                     int type = _random.Next((int)EnumSprite.TREE_1, (int)EnumSprite.TREE_1 + 8);
 
-                    if (type == 11)
+                    if (type == 12)
                     {
-                        type = 10;
+                        type = 11;
                     }
                     _map.AddObject(new States.StateImplementation.Game.Models.Object(x, y, (EnumSprite)type));
 

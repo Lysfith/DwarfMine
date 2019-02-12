@@ -13,6 +13,7 @@ namespace DwarfMine.States.StateImplementation.Game
     public enum EnumSprite
     {
         DEV,
+        DEV2,
         GRASS_INNER_TOP_LEFT,
         GRASS_INNER_TOP,
         GRASS_INNER_TOP_RIGHT,
