@@ -44,16 +44,26 @@ namespace DwarfMine.Scenes.SceneImplementation.Game.Systems
 
                 if (movementDestination.Position != null)
                 {
+                    if(movementDestination.JobComputePath != null)
+                    {
+                        continue;
+                    }
+
                     var position = transform.WorldPosition;
                     var positionPoint = new Point((int)transform.WorldPosition.X, (int)transform.WorldPosition.Y);
                     var hasReachedDestination = Vector2.Distance(movementDestination.Position.Value.ToVector2(), positionPoint.ToVector2()) < 1.5f;
 
-                    //Compute path
-                    if (movementDestination.Path == null || !movementDestination.Path.Any())
+                    if (hasReachedDestination)
                     {
-                        if (movementDestination.JobComputePath == null)
+                        movementDestination.Position = null;
+                        movementDestination.Path.Clear();
+                        continue;
+                    }
+                    else
+                    {
+                        if (movementDestination.Path == null || !movementDestination.Path.Any())
                         {
-                            JobManager.Instance.AddJob(() =>
+                            movementDestination.JobComputePath = JobManager.Instance.AddJob(() =>
                             {
                                 movementDestination.Path = CreatePath(positionPoint, movementDestination.Position.Value);
 
@@ -69,15 +79,7 @@ namespace DwarfMine.Scenes.SceneImplementation.Game.Systems
                                 movementDestination.JobComputePath = null;
                             });
                         }
-                    }
-                    else if(hasReachedDestination)
-                    {
-                        movementDestination.Position = null;
-                        movementDestination.Path.Clear();
-                    }
-                    else
-                    {
-                        if (movementDestination.JobComputePath == null && movementDestination.Path != null && movementDestination.Path.Any())
+                        else
                         {
                             var nextDestination = movementDestination.Path.Peek();
 

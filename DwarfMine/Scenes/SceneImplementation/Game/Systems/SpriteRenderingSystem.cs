@@ -1,4 +1,5 @@
 ﻿using DwarfMine.Graphics;
+using DwarfMine.States.StateImplementation.Game;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -37,17 +38,24 @@ namespace DwarfMine.Scenes.SceneImplementation.Game.Systems
 
         public override void Draw(GameTime gameTime)
         {
+            var rectangle = _camera.BoundingRectangle;
+            rectangle.Inflate(Constants.TILE_WIDTH * 0.5f, Constants.TILE_HEIGHT * 0.5f);
+
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: _camera.GetViewMatrix(), blendState: BlendState.AlphaBlend);
 
             foreach (var entity in ActiveEntities)
             {
                 var transform = _transformMapper.Get(entity);
-                var animatedSprite = _animatedSpriteMapper.Get(entity);
-                var sprite = _spriteMapper.Get(entity);
 
-                animatedSprite?.Update(gameTime);
+                if (rectangle.Contains(new Point((int)transform.Position.X, (int)transform.Position.Y)))
+                {
+                    var animatedSprite = _animatedSpriteMapper.Get(entity);
+                    var sprite = _spriteMapper.Get(entity);
 
-                _spriteBatch.Draw(sprite ?? animatedSprite, transform);
+                    animatedSprite?.Update(gameTime);
+
+                    _spriteBatch.Draw(sprite ?? animatedSprite, transform);
+                }
             }
 
             _spriteBatch.End();

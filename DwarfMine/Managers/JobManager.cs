@@ -25,11 +25,14 @@ namespace DwarfMine.Managers
         }
 
 
-        public List<Job> Jobs { get; private set; }
+        public Queue<Job> Jobs { get; private set; }
+        public List<Job> ActiveJobs { get; private set; }
+        public int ConcurrentJob { get; private set; } = 5;
 
         public JobManager()
         {
-            Jobs = new List<Job>();
+            Jobs = new Queue<Job>();
+            ActiveJobs = new List<Job>();
         }
 
         public override void Load(ContentManager content)
@@ -40,33 +43,23 @@ namespace DwarfMine.Managers
         public Job AddJob(Action action)
         {
             var job = new Job(action);
-            Jobs.Add(job);
-
-            Thread t = new Thread(new ThreadStart(job.Run));
-            t.Start();
+            Jobs.Enqueue(job);
 
             return job;
         }
 
         public void Update()
         {
-            if (Jobs.Count > 0)
+            ActiveJobs.RemoveAll(j => j.IsDone || j.IsCanceled);
+
+            if (ActiveJobs.Count < ConcurrentJob && Jobs.Any())
             {
-                var jobsToRemove = new List<Job>();
-
-                foreach (var job in Jobs.ToList())
+                while(Jobs.Any() && ActiveJobs.Count < ConcurrentJob)
                 {
-                    if (job.IsDone)
-                    {
-                        jobsToRemove.Add(job);
-                    }
-                    else if (job.IsCanceled)
-                    {
-                        jobsToRemove.Add(job);
-                    }
+                    var job = Jobs.Dequeue();
+                    job.Start();
+                    ActiveJobs.Add(job);
                 }
-
-                Jobs.RemoveAll(j => jobsToRemove.Contains(j));
             }
         }
     }
@@ -82,6 +75,12 @@ namespace DwarfMine.Managers
         public Job(Action action)
         {
             _action = action;
+        }
+
+        public void Start()
+        {
+            Thread t = new Thread(new ThreadStart(Run));
+            t.Start();
         }
 
         public void Run()

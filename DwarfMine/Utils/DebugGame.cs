@@ -1,4 +1,5 @@
 ﻿using DwarfMine.Graphics;
+using DwarfMine.Managers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -66,7 +67,7 @@ namespace DwarfMine.Utils
 
         public static void StartUpdate()
         {
-#if DEBUG
+#if true
             if (_swUpdate != null)
             {
                 if (_swUpdate.IsRunning)
@@ -88,7 +89,7 @@ namespace DwarfMine.Utils
 
         public static void StopUpdate()
         {
-#if DEBUG
+#if true
             if (_swUpdate != null && _swUpdate.IsRunning)
             {
                 _swUpdate.Stop();
@@ -99,7 +100,7 @@ namespace DwarfMine.Utils
 
         public static void StartDraw()
         {
-#if DEBUG
+#if true
             if (_swDraw != null)
             {
                 if (_swDraw.IsRunning)
@@ -121,7 +122,7 @@ namespace DwarfMine.Utils
 
         public static void StopDraw()
         {
-#if DEBUG
+#if true
             if (_swDraw != null && _swDraw.IsRunning)
             {
                 _swDraw.Stop();
@@ -132,7 +133,7 @@ namespace DwarfMine.Utils
 
         public static void Draw(CustomSpriteBatch spritebatch)
         {
-#if DEBUG
+#if true
             var drawCount = spritebatch.DrawCallsCount;
 
             spritebatch.Begin();
@@ -140,6 +141,8 @@ namespace DwarfMine.Utils
             spritebatch.SpriteBatch.DrawString(_font, $"Update : {_updateTime.ToString("0000")} ms", new Vector2(10, 10), Color.Yellow);
             spritebatch.SpriteBatch.DrawString(_font, $"Draw : {_drawTime.ToString("0000")} ms", new Vector2(10, 30), Color.Yellow);
             spritebatch.SpriteBatch.DrawString(_font, $"DrawCalls : {drawCount}", new Vector2(10, 50), Color.Yellow);
+            spritebatch.SpriteBatch.DrawString(_font, $"Jobs : {JobManager.Instance.Jobs.Count}", new Vector2(10, 70), Color.Yellow);
+            spritebatch.SpriteBatch.DrawString(_font, $"Active Jobs : {JobManager.Instance.ActiveJobs.Count}", new Vector2(10, 90), Color.Yellow);
 
             spritebatch.End();
 #endif
