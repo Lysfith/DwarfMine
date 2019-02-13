@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DwarfMine.States.StateImplementation.Game.Components.RegionLayers
+namespace DwarfMine.States.StateImplementation.Game.Layers.RegionLayers
 {
     public abstract class RegionLayer
     {

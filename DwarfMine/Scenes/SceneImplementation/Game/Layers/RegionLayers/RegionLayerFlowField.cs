@@ -8,7 +8,7 @@ using DwarfMine.Services;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace DwarfMine.States.StateImplementation.Game.Components.RegionLayers
+namespace DwarfMine.States.StateImplementation.Game.Layers.RegionLayers
 {
     public class RegionLayerFlowField : RegionLayer
     {

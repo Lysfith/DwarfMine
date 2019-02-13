@@ -1,6 +1,6 @@
 ﻿using DwarfMine.Graphics;
 using DwarfMine.Managers;
-using DwarfMine.States.StateImplementation.Game.Components.RegionLayers;
+using DwarfMine.States.StateImplementation.Game.Layers.RegionLayers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Sprites;

@@ -1,5 +1,5 @@
 ﻿using DwarfMine.Graphics;
-using DwarfMine.States.StateImplementation.Game.Components;
+using DwarfMine.States.StateImplementation.Game.Layers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -98,7 +98,7 @@ namespace DwarfMine.States.StateImplementation.Game.Models
                     region.Draw(time, spriteBatch);
                 }
 
-                _objectLayer.Draw(time, spriteBatch, camera);
+                //_objectLayer.Draw(time, spriteBatch, camera);
 
                 spriteBatch.End();
             }

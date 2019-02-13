@@ -2,7 +2,7 @@
 using DwarfMine.Managers;
 using DwarfMine.Scenes.SceneImplementation.Game.Systems;
 using DwarfMine.Services;
-using DwarfMine.States.StateImplementation.Game.Components.RegionLayers;
+using DwarfMine.States.StateImplementation.Game.Layers.RegionLayers;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 using MonoGame.Extended.Sprites;
@@ -54,8 +54,6 @@ namespace DwarfMine.States.StateImplementation.Game.Models
 
         public override void Draw(CustomSpriteBatch spriteBatch, GameTime time)
         {
-            base.Draw(spriteBatch, time);
-
             if (_path != null && _path.Any())
             {
                 var sprite = SpriteManager.Instance.GetSprite(EnumSprite.DEV2);
@@ -65,6 +63,8 @@ namespace DwarfMine.States.StateImplementation.Game.Models
                     spriteBatch.Draw(sprite, p.ToVector2());
                 }
             }
+
+            base.Draw(spriteBatch, time);
         }
 
         public void SetDestination(Point? destination)

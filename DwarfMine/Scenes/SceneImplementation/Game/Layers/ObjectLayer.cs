@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DwarfMine.States.StateImplementation.Game.Components
+namespace DwarfMine.States.StateImplementation.Game.Layers
 {
     public class ObjectLayer
     {

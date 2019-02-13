@@ -1,7 +1,8 @@
 ﻿using DwarfMine.Graphics;
 using DwarfMine.Managers;
+using DwarfMine.Scenes.SceneImplementation.Game;
 using DwarfMine.Scenes.SceneImplementation.Game.Systems;
-using DwarfMine.States.StateImplementation.Game.Components;
+using DwarfMine.States.StateImplementation.Game.Layers;
 using DwarfMine.States.StateImplementation.Game.Models;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -30,6 +31,8 @@ namespace DwarfMine.States.StateImplementation.Game
         private Point? _currentCellHovered;
 
         private List<Character> _characters;
+        private World _world;
+        private EntityFactory _entityFactory;
 
         public GameScene()
         {
@@ -39,8 +42,9 @@ namespace DwarfMine.States.StateImplementation.Game
         public void Start()
         {
             var camera = GraphicManager.Instance.Camera;
+            var spritebatch = GraphicManager.Instance.SpriteBatch;
 
-            camera.MinimumZoom = 0.5f;
+            camera.MinimumZoom = 0.1f;
             camera.MaximumZoom = 3f;
 
             camera.LookAt(Vector2.Zero);
@@ -63,7 +67,18 @@ namespace DwarfMine.States.StateImplementation.Game
 
             MapSystem.Instance.Load(1, 1);
 
-            _characters = new List<Character>();
+            
+
+            _world = new WorldBuilder()
+                .AddSystem(new SpriteRenderingSystem(spritebatch, camera))
+                .AddSystem(new MovementSystem())
+                .Build();
+
+            _entityFactory = new EntityFactory(_world);
+
+            //entityFactory.SpawnPlayer(100, 100);
+
+            //_characters = new List<Character>();
 
             _cellHighlight = new PrimitiveRectangle(PrimitiveRectangle.Type.OUTLINE, Constants.TILE_WIDTH, Constants.TILE_HEIGHT, TextureManager.Instance.GetTexture("blank"), Color.Transparent, Color.Red, 1);
         }
@@ -89,11 +104,15 @@ namespace DwarfMine.States.StateImplementation.Game
             _mouseListener.Update(time);
 
             MapSystem.Instance.Update(time, camera);
+
+            _world.Update(time);
         }
 
         public void Draw(GameTime time, CustomSpriteBatch spriteBatch, OrthographicCamera camera)
         {
             MapSystem.Instance.Draw(time, spriteBatch, camera);
+
+            _world.Draw(time);
 
             spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: camera.GetViewMatrix());
 
@@ -141,11 +160,16 @@ namespace DwarfMine.States.StateImplementation.Game
 
                 if (isFree)
                 {
-                    var character = new Models.Character((int)mousePositionWorld.X, (int)mousePositionWorld.Y);
+                    for (int i = 0; i < 100; i++)
+                    {
+                        _entityFactory.SpawnPlayer((int)mousePositionWorld.X, (int)mousePositionWorld.Y);
+                    }
 
-                    CharacterSystem.Instance.AddCharacter(character);
+                    //var character = new Models.Character((int)mousePositionWorld.X, (int)mousePositionWorld.Y);
 
-                    _characters.Add(character);
+                    //CharacterSystem.Instance.AddCharacter(character);
+
+                    //_characters.Add(character);
                 }
             }
             else if(args.Button == MonoGame.Extended.Input.MouseButton.Middle)
@@ -157,10 +181,10 @@ namespace DwarfMine.States.StateImplementation.Game
 
                 MapSystem.Instance.Select((int)mousePositionWorld.X, (int)mousePositionWorld.Y);
 
-                foreach (var character in _characters)
-                {
-                    character.SetDestination(mousePositionWorld.ToPoint());
-                }
+                //foreach (var character in _characters)
+                //{
+                //    character.SetDestination(mousePositionWorld.ToPoint());
+                //}
             }
         }
 
