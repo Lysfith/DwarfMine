@@ -43,6 +43,7 @@ namespace DwarfMine
 #if DEBUG
             DebugGame.StartUpdate();
 #endif
+            JobManager.Instance.Update();
 
             SceneManager.Instance.Update(gameTime, GraphicManager.Instance.Camera);
 
