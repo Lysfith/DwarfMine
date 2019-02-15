@@ -1,4 +1,5 @@
 ﻿using DwarfMine.Graphics;
+using DwarfMine.Scenes.SceneImplementation.Game.Components;
 using DwarfMine.States.StateImplementation.Game;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -23,7 +24,7 @@ namespace DwarfMine.Scenes.SceneImplementation.Game.Systems
         private ComponentMapper<AnimatedSprite> _animatedSpriteMapper;
 
         public SpriteRenderingSystem(CustomSpriteBatch spriteBatch, OrthographicCamera camera)
-            : base(Aspect.All(typeof(Transform2)).One(typeof(Sprite), typeof(AnimatedSprite)))
+            : base(Aspect.All(typeof(Transform2), typeof(Visibility)))
         {
             _spriteBatch = spriteBatch;
             _camera = camera;
@@ -38,24 +39,18 @@ namespace DwarfMine.Scenes.SceneImplementation.Game.Systems
 
         public override void Draw(GameTime gameTime)
         {
-            var rectangle = _camera.BoundingRectangle;
-            rectangle.Inflate(Constants.TILE_WIDTH * 0.5f, Constants.TILE_HEIGHT * 0.5f);
-
             _spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: _camera.GetViewMatrix(), blendState: BlendState.AlphaBlend);
 
             foreach (var entity in ActiveEntities)
             {
                 var transform = _transformMapper.Get(entity);
 
-                if (rectangle.Contains(new Point((int)transform.Position.X, (int)transform.Position.Y)))
-                {
-                    var animatedSprite = _animatedSpriteMapper.Get(entity);
-                    var sprite = _spriteMapper.Get(entity);
+                var animatedSprite = _animatedSpriteMapper.Get(entity);
+                var sprite = _spriteMapper.Get(entity);
 
-                    animatedSprite?.Update(gameTime);
+                animatedSprite?.Update(gameTime);
 
-                    _spriteBatch.Draw(sprite ?? animatedSprite, transform);
-                }
+                _spriteBatch.Draw(sprite ?? animatedSprite, transform);
             }
 
             _spriteBatch.End();

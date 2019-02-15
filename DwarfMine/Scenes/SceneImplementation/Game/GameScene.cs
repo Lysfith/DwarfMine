@@ -70,6 +70,7 @@ namespace DwarfMine.States.StateImplementation.Game
             
 
             _world = new WorldBuilder()
+                .AddSystem(new SpriteVisibilitySystem(camera))
                 .AddSystem(new SpriteRenderingSystem(spritebatch, camera))
                 .AddSystem(new MovementSystem())
                 .Build();
