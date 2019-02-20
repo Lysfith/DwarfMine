@@ -184,28 +184,24 @@ namespace DwarfMine.States.StateImplementation.Game.Layers.RegionLayers
 
             var blanktexture = TextureManager.Instance.GetTexture("blank");
 
-            //if (_flowDirections.ContainsKey(Direction.NORTH))
+            //if (_tileCosts != null)
             //{
-            //    var flow = _flowDirections[Direction.NORTH];
+            //    var color = Color.Red;
 
             //    for (int y = 0; y < Constants.REGION_HEIGHT; y++)
             //    {
             //        for (int x = 0; x < Constants.REGION_WIDTH; x++)
             //        {
-            //            var direction = flow[x, y];
+            //            var tile = _tileCosts[x, y];
 
-            //            if (direction != Vector2.Zero)
-            //            {
-            //                var currentPosition = new Vector2(x * Constants.TILE_WIDTH + Constants.TILE_HALF_WIDTH, y * Constants.TILE_HEIGHT + Constants.TILE_HALF_HEIGHT);
-            //                var nextPosition = currentPosition + (direction * new Vector2(Constants.TILE_WIDTH, Constants.TILE_HEIGHT) / 2f);
+            //            var currentPosition = new Vector2(x * Constants.TILE_WIDTH + Constants.TILE_HALF_WIDTH, y * Constants.TILE_HEIGHT + Constants.TILE_HALF_HEIGHT);
 
-            //                customSpriteBatch.Draw(blanktexture, new Rectangle(
-            //                    (int)currentPosition.X - 3, (int)currentPosition.Y - 3,
-            //                    6, 6
-            //                    ), Color.Cyan);
+            //            color.A = tile;
 
-            //                customSpriteBatch.DrawLine(currentPosition, nextPosition, Color.Cyan, 2);
-            //            }
+            //            customSpriteBatch.Draw(blanktexture, new Rectangle(
+            //                (int)currentPosition.X - Constants.TILE_HALF_WIDTH, (int)currentPosition.Y - Constants.TILE_HALF_HEIGHT,
+            //                Constants.TILE_WIDTH, Constants.TILE_HEIGHT
+            //                ), color);
             //        }
             //    }
             //}

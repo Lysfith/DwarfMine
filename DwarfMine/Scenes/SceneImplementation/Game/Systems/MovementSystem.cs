@@ -65,7 +65,7 @@ namespace DwarfMine.Scenes.SceneImplementation.Game.Systems
                         {
                             movementDestination.JobComputePath = JobManager.Instance.AddJob(() =>
                             {
-                                movementDestination.Path = CreatePath(positionPoint, movementDestination.Position.Value);
+                                movementDestination.Path = CreatePath(positionPoint, movementDestination.Position.Value, movementDestination.Path);
 
                                 if (movementDestination.Path.Any())
                                 {
@@ -98,7 +98,7 @@ namespace DwarfMine.Scenes.SceneImplementation.Game.Systems
                         }
                     }
                 }
-                else
+                else if(!movementDestination.HasMoved)
                 {
                     var newPoint = new Point(_random.Next(10, Constants.REGION_WIDTH * Constants.TILE_WIDTH-10), _random.Next(10, Constants.REGION_HEIGHT * Constants.TILE_HEIGHT-10));
 
@@ -109,14 +109,27 @@ namespace DwarfMine.Scenes.SceneImplementation.Game.Systems
                     if (isFree)
                     {
                         movementDestination.Position = newPoint;
+
+                        movementDestination.HasMoved = true;
                     }
+                }
+                else if (movementDestination.HasMoved)
+                {
+                    _movementDestinationMapper.Delete(entity);
                 }
             }
         }
 
-        private Queue<Point> CreatePath(Point position, Point destination)
+        private Queue<Point> CreatePath(Point position, Point destination, Queue<Point> path = null)
         {
-            var path = new Queue<Point>();
+            if (path == null)
+            {
+                path = new Queue<Point>();
+            }
+            else
+            {
+                path.Clear();
+            }
 
             var region = MapSystem.Instance.GetRegion(position.X, position.Y);
 

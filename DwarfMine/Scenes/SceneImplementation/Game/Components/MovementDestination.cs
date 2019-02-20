@@ -8,6 +8,7 @@ namespace DwarfMine.Scenes.SceneImplementation.Game.Components
 {
     public class MovementDestination
     {
+        public bool HasMoved { get; set; }
         public Point? Position { get; set; }
         public Queue<Point> Path { get; set; }
         public Job JobComputePath { get; set; }
