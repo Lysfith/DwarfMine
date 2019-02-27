@@ -31,5 +31,6 @@ namespace DwarfMine.States.StateImplementation.Game
         FLOWER_4,
         FLOWER_5,
         FLOWER_6,
+        SELECT,
     }
 }

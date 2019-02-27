@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Input.Touch;
 using MonoGame.Extended;
 using MonoGame.Extended.Entities;
 using MonoGame.Extended.Input.InputListeners;
+using MonoGame.Extended.Sprites;
 using MonoGame.Extended.Tiled;
 using MonoGame.Extended.Tiled.Renderers;
 using System;
@@ -27,10 +28,13 @@ namespace DwarfMine.States.StateImplementation.Game
         private SpriteFont _font;
         private KeyboardListener _keyboardListener;
         private MouseListener _mouseListener;
-        private PrimitiveRectangle _cellHighlight;
+        private Sprite _cellHighlight;
         private Point? _currentCellHovered;
+        private Vector2 _currentCellScale;
+        private float _currentCellTime;
+        private int _currentCellSign = -1;
 
-        private List<Character> _characters;
+        //private List<Character> _characters;
         private World _world;
         private EntityFactory _entityFactory;
 
@@ -81,7 +85,8 @@ namespace DwarfMine.States.StateImplementation.Game
 
             //_characters = new List<Character>();
 
-            _cellHighlight = new PrimitiveRectangle(PrimitiveRectangle.Type.OUTLINE, Constants.TILE_WIDTH, Constants.TILE_HEIGHT, TextureManager.Instance.GetTexture("blank"), Color.Transparent, Color.Red, 1);
+            _cellHighlight = SpriteManager.Instance.GetSprite(EnumSprite.SELECT);
+            _currentCellScale = new Vector2(1, 1);
         }
 
         public void End()
@@ -106,6 +111,15 @@ namespace DwarfMine.States.StateImplementation.Game
 
             MapSystem.Instance.Update(time, camera);
 
+            _currentCellTime += (float)time.ElapsedGameTime.TotalSeconds;
+            _currentCellScale += new Vector2(0.2f * (float)time.ElapsedGameTime.TotalSeconds, 0.2f * (float)time.ElapsedGameTime.TotalSeconds) * _currentCellSign;
+
+            if (_currentCellTime >= 1)
+            {
+                _currentCellSign = _currentCellSign * -1;
+                _currentCellTime = 0;
+            }
+
             _world.Update(time);
         }
 
@@ -119,7 +133,7 @@ namespace DwarfMine.States.StateImplementation.Game
 
             if (_currentCellHovered != null)
             {
-                _cellHighlight.Draw(spriteBatch, _currentCellHovered.Value.X - Constants.TILE_HALF_WIDTH, _currentCellHovered.Value.Y - Constants.TILE_HALF_HEIGHT);
+                spriteBatch.Draw(_cellHighlight, new Vector2(_currentCellHovered.Value.X, _currentCellHovered.Value.Y), 0, _currentCellScale);
             }
 
             spriteBatch.End();
@@ -223,23 +237,20 @@ namespace DwarfMine.States.StateImplementation.Game
 
         private void MouseMoved(object sender, MouseEventArgs args)
         {
-            if (args.Button == MonoGame.Extended.Input.MouseButton.Right)
+            var mousePositionScreen = args.Position;
+            var camera = GraphicManager.Instance.Camera;
+
+            var mousePositionWorld = camera.ScreenToWorld(mousePositionScreen.X, mousePositionScreen.Y);
+
+            var region = MapSystem.Instance.GetRegion((int)mousePositionWorld.X, (int)mousePositionWorld.Y);
+
+            if (region != null)
             {
-                var mousePositionScreen = args.Position;
-                var camera = GraphicManager.Instance.Camera;
-
-                var mousePositionWorld = camera.ScreenToWorld(mousePositionScreen.X, mousePositionScreen.Y);
-
-                var region = MapSystem.Instance.GetRegion((int)mousePositionWorld.X, (int)mousePositionWorld.Y);
-
-                if (region != null)
-                {
-                    _currentCellHovered = region.GetCellPositionFromWorldPosition((int)mousePositionWorld.X, (int)mousePositionWorld.Y);
-                }
-                else
-                {
-                    _currentCellHovered = null;
-                }
+                _currentCellHovered = region.GetCellPositionFromWorldPosition((int)mousePositionWorld.X, (int)mousePositionWorld.Y);
+            }
+            else
+            {
+                _currentCellHovered = null;
             }
         }
 

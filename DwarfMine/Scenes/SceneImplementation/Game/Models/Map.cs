@@ -32,8 +32,7 @@ namespace DwarfMine.States.StateImplementation.Game.Models
 
         public Region GetRegion(int xWorld, int yWorld)
         {
-            //return _regions.Where(r => r.Value.Rectangle.Contains(xWorld, yWorld)).Select(r => r.Value).FirstOrDefault();
-            return _regions.First().Value;
+            return _regions.Where(r => r.Value.Rectangle.Contains(xWorld, yWorld)).Select(r => r.Value).FirstOrDefault();
         }
 
         public void AddObject(Object obj)
