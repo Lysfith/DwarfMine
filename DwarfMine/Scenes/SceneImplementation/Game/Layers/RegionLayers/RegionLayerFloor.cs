@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using DwarfMine.Graphics;
-using DwarfMine.Managers;
+using Autofac;
+using DwarfMine.Core;
+using DwarfMine.Core.Graphics;
+using DwarfMine.Interfaces.Resource;
+using DwarfMine.Interfaces.Util;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Sprites;
@@ -54,14 +57,24 @@ namespace DwarfMine.States.StateImplementation.Game.Layers.RegionLayers
 
         private void CreateTexture()
         {
-            var spriteBatch = new SpriteBatch(GraphicManager.Instance.GraphicsDevice);
-            var renderTarget = new RenderTarget2D(GraphicManager.Instance.GraphicsDevice, Rectangle.Width, Rectangle.Height);
+            GraphicsDevice graphicsDevice = null;
+            Sprite sprite = null;
 
-            GraphicManager.Instance.GraphicsDevice.SetRenderTarget(renderTarget);
+            using (var scope = GameCore.Instance.CreateScope())
+            {
+                var globalService = scope.Resolve<IGlobalService>();
+                var spriteService = scope.Resolve<ISpriteService>();
+
+                graphicsDevice = globalService.GetGraphicsDevice();
+                sprite = spriteService.GetSprite((int)EnumSprite.GRASS_1);
+            }
+
+            var spriteBatch = new SpriteBatch(graphicsDevice);
+            var renderTarget = new RenderTarget2D(graphicsDevice, Rectangle.Width, Rectangle.Height);
+
+            graphicsDevice.SetRenderTarget(renderTarget);
 
             spriteBatch.Begin();
-
-            var sprite = SpriteManager.Instance.GetSprite(EnumSprite.GRASS_1);
 
             for (int y = 0; y < Constants.REGION_HEIGHT; y++)
             {
@@ -73,7 +86,7 @@ namespace DwarfMine.States.StateImplementation.Game.Layers.RegionLayers
 
             spriteBatch.End();
 
-            GraphicManager.Instance.GraphicsDevice.SetRenderTarget(null);
+            graphicsDevice.SetRenderTarget(null);
 
             _texture = (Texture2D)renderTarget;
 

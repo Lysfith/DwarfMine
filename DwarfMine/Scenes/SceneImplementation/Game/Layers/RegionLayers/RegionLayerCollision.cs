@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using DwarfMine.Graphics;
-using DwarfMine.Managers;
+using Autofac;
+using DwarfMine.Core;
+using DwarfMine.Core.Graphics;
+using DwarfMine.Interfaces.Resource;
+using DwarfMine.Interfaces.Util;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -12,8 +15,8 @@ namespace DwarfMine.States.StateImplementation.Game.Layers.RegionLayers
     public class RegionLayerCollision : RegionLayer
     {
         private Texture2D _texture;
-        private PrimitiveRectangle _cellSprite;
-        private PrimitiveRectangle _cellWalkable;
+        //private PrimitiveRectangle _cellSprite;
+        //private PrimitiveRectangle _cellWalkable;
 
         private bool[,] _collisions;
         private List<Rectangle> _rectangleWalkables;
@@ -24,8 +27,8 @@ namespace DwarfMine.States.StateImplementation.Game.Layers.RegionLayers
             _collisions = new bool[Constants.REGION_WIDTH, Constants.REGION_HEIGHT];
             _rectangleWalkables = new List<Rectangle>();
 
-            _cellSprite = new PrimitiveRectangle(PrimitiveRectangle.Type.OUTLINE, Constants.TILE_WIDTH, Constants.TILE_HEIGHT, TextureManager.Instance.GetTexture("blank"), Color.Transparent, Color.Yellow, 1);
-            _cellWalkable = new PrimitiveRectangle(PrimitiveRectangle.Type.OUTLINE, Constants.TILE_WIDTH, Constants.TILE_HEIGHT, TextureManager.Instance.GetTexture("blank"), Color.Transparent, Color.Cyan, 1);
+            //_cellSprite = new PrimitiveRectangle(PrimitiveRectangle.Type.OUTLINE, Constants.TILE_WIDTH, Constants.TILE_HEIGHT, TextureManager.Instance.GetTexture("blank"), Color.Transparent, Color.Yellow, 1);
+            //_cellWalkable = new PrimitiveRectangle(PrimitiveRectangle.Type.OUTLINE, Constants.TILE_WIDTH, Constants.TILE_HEIGHT, TextureManager.Instance.GetTexture("blank"), Color.Transparent, Color.Cyan, 1);
         }
 
         public void SetCollision(int x, int y, bool value)
@@ -191,28 +194,39 @@ namespace DwarfMine.States.StateImplementation.Game.Layers.RegionLayers
 
         private void CreateTexture()
         {
-            var spriteBatch = new SpriteBatch(GraphicManager.Instance.GraphicsDevice);
+            GraphicsDevice graphicsDevice = null;
+            Texture2D blanktexture = null;
+
+            using (var scope = GameCore.Instance.CreateScope())
+            {
+                var globalService = scope.Resolve<IGlobalService>();
+                var textureService = scope.Resolve<ITextureService>();
+
+                graphicsDevice = globalService.GetGraphicsDevice();
+                blanktexture = textureService.GetTexture("blank");
+            }
+
+
+            var spriteBatch = new SpriteBatch(graphicsDevice);
             var customSpriteBatch = new CustomSpriteBatch(spriteBatch);
-            var renderTarget = new RenderTarget2D(GraphicManager.Instance.GraphicsDevice, Rectangle.Width, Rectangle.Height);
+            var renderTarget = new RenderTarget2D(graphicsDevice, Rectangle.Width, Rectangle.Height);
 
-            GraphicManager.Instance.GraphicsDevice.SetRenderTarget(renderTarget);
+            graphicsDevice.SetRenderTarget(renderTarget);
 
-            GraphicManager.Instance.GraphicsDevice.Clear(Color.Transparent);
+            graphicsDevice.Clear(Color.Transparent);
 
             customSpriteBatch.Begin();
 
-            var blanktexture = TextureManager.Instance.GetTexture("blank");
-
-            for (int y = 0; y < Constants.REGION_HEIGHT; y++)
-            {
-                for (int x = 0; x < Constants.REGION_WIDTH; x++)
-                {
-                    if (_collisions[x, y])
-                    {
-                        _cellSprite.Draw(customSpriteBatch, x * Constants.TILE_WIDTH, y * Constants.TILE_HEIGHT);
-                    }
-                }
-            }
+            //for (int y = 0; y < Constants.REGION_HEIGHT; y++)
+            //{
+            //    for (int x = 0; x < Constants.REGION_WIDTH; x++)
+            //    {
+            //        if (_collisions[x, y])
+            //        {
+            //            _cellSprite.Draw(customSpriteBatch, x * Constants.TILE_WIDTH, y * Constants.TILE_HEIGHT);
+            //        }
+            //    }
+            //}
 
             //foreach (var rect in _rectangleWalkables)
             //{
@@ -221,7 +235,7 @@ namespace DwarfMine.States.StateImplementation.Game.Layers.RegionLayers
 
             customSpriteBatch.End();
 
-            GraphicManager.Instance.GraphicsDevice.SetRenderTarget(null);
+            graphicsDevice.SetRenderTarget(null);
 
             _texture = (Texture2D)renderTarget;
 

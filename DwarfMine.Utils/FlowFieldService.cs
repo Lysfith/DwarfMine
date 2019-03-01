@@ -1,17 +1,18 @@
-﻿using Microsoft.Xna.Framework;
+﻿using DwarfMine.Interfaces.Util;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace DwarfMine.Services
+namespace DwarfMine.Utils
 {
-    public static class PathFindingService
+    public class FlowFieldService : IFlowFieldService
     {
         private const int MAX_VALUE = 65535;
         private const byte MAX_COST = 255;
 
-        public static Vector2[,] ComputeFlow(byte[,] costs, int destinationX, int destinationY)
+        public Vector2[,] ComputeFlow(byte[,] costs, int destinationX, int destinationY)
         {
             var values = new int[costs.GetLength(0), costs.GetLength(1)];
             var flows = new Vector2[costs.GetLength(0), costs.GetLength(1)];
@@ -25,7 +26,7 @@ namespace DwarfMine.Services
             return flows;
         }
 
-        private static void ResetValues(ref int[,] values)
+        private void ResetValues(ref int[,] values)
         {
             for (int y = 0; y < values.GetLength(1); y++)
             {
@@ -36,7 +37,7 @@ namespace DwarfMine.Services
             }
         }
 
-        private static void ComputeIntegrationField(ref byte[,] costs, ref int[,] values, int destinationX, int destinationY)
+        private void ComputeIntegrationField(ref byte[,] costs, ref int[,] values, int destinationX, int destinationY)
         {
             var listOpen = new Queue<Point>();
 
@@ -136,7 +137,7 @@ namespace DwarfMine.Services
             }
         }
 
-        private static void ComputeFlowField(ref int[,] values, ref Vector2[,] flows, int destinationX, int destinationY)
+        private void ComputeFlowField(ref int[,] values, ref Vector2[,] flows, int destinationX, int destinationY)
         {
             for (int y = 0; y < values.GetLength(1); y++)
             {
@@ -148,7 +149,7 @@ namespace DwarfMine.Services
 
         }
 
-        private static Vector2 ComputeFlowDirection(ref int[,] values, ref Vector2[,] flows, int x, int y)
+        private Vector2 ComputeFlowDirection(ref int[,] values, ref Vector2[,] flows, int x, int y)
         {
             var currentPosition = new Point(x, y);
             var neighborsN = currentPosition + new Point(0, -1);

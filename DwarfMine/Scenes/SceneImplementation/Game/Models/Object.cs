@@ -1,5 +1,9 @@
-﻿using DwarfMine.Graphics;
-using DwarfMine.Managers;
+﻿
+
+using Autofac;
+using DwarfMine.Core;
+using DwarfMine.Core.Graphics;
+using DwarfMine.Interfaces.Resource;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 using MonoGame.Extended.Sprites;
@@ -29,9 +33,16 @@ namespace DwarfMine.States.StateImplementation.Game.Models
 
         public virtual void Draw(CustomSpriteBatch spriteBatch, GameTime time)
         {
-            var sprite = SpriteManager.Instance.GetSprite(Sprite);
+            using (var scope = GameCore.Instance.CreateScope())
+            {
+                var spriteService = scope.Resolve<ISpriteService>();
 
-            spriteBatch.Draw(sprite, new Transform2(X, Y));
+                var sprite = spriteService.GetSprite((int)Sprite);
+
+                spriteBatch.Draw(sprite, new Transform2(X, Y));
+            }
+
+            
         }
     }
 }

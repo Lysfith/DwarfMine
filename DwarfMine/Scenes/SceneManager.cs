@@ -1,5 +1,7 @@
-﻿using DwarfMine.Graphics;
-using DwarfMine.Managers;
+﻿using Autofac;
+using DwarfMine.Core;
+using DwarfMine.Core.Graphics;
+using DwarfMine.Interfaces.Util;
 using DwarfMine.States.StateImplementation.Game;
 using DwarfMine.Utils;
 using Microsoft.Xna.Framework;
@@ -90,28 +92,29 @@ namespace DwarfMine.States
                 //    break;
             }
 
-
-            if (sceneHasChanged)
+            using (var scope = GameCore.Instance.CreateScope())
             {
+                var logService = scope.Resolve<ILogService>();
+
+                if (sceneHasChanged)
+                {
+
 #if DEBUG
-                DebugGame.Log(
-                    nameof(SceneManager),
-                    nameof(SetScene),
-                    string.Format("L'état du jeu a été modifié ! ({0} => {1})",
-                    _currentScene, scene));
+                    logService.Info(
+                        string.Format("L'état du jeu a été modifié ! ({0} => {1})",
+                        _currentScene, scene));
 #endif
 
-                this._currentScene = scene;
-            }
-            else
-            {
+                    this._currentScene = scene;
+                }
+                else
+                {
 #if DEBUG
-                DebugGame.Log(
-                    nameof(SceneManager),
-                    nameof(SetScene),
-                    string.Format("L'état du jeu n'a pas pu être modifié ! ({0} => {1})",
-                    _currentScene, scene));
+                    logService.Info(
+                        string.Format("L'état du jeu n'a pas pu être modifié ! ({0} => {1})",
+                        _currentScene, scene));
 #endif
+                }
             }
         }
 

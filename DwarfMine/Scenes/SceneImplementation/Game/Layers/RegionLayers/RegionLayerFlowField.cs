@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using DwarfMine.Graphics;
-using DwarfMine.Managers;
-using DwarfMine.Services;
+using Autofac;
+using DwarfMine.Core;
+using DwarfMine.Core.Graphics;
+using DwarfMine.Interfaces.Resource;
+using DwarfMine.Interfaces.Util;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -143,14 +145,14 @@ namespace DwarfMine.States.StateImplementation.Game.Layers.RegionLayers
         {
             _flowDirections.Clear();
 
-            _flowDirections.Add(Direction.NORTH_WEST, PathFindingService.ComputeFlow(_tileCosts, 0, 0));
-            _flowDirections.Add(Direction.NORTH, PathFindingService.ComputeFlow(_tileCosts, Constants.REGION_WIDTH / 2, 0));
-            _flowDirections.Add(Direction.NORTH_EAST, PathFindingService.ComputeFlow(_tileCosts, Constants.REGION_WIDTH-1, 0));
-            _flowDirections.Add(Direction.EAST, PathFindingService.ComputeFlow(_tileCosts, 0, Constants.REGION_HEIGHT / 2));
-            _flowDirections.Add(Direction.WEST, PathFindingService.ComputeFlow(_tileCosts, Constants.REGION_WIDTH-1, Constants.REGION_HEIGHT / 2));
-            _flowDirections.Add(Direction.SOUTH_WEST, PathFindingService.ComputeFlow(_tileCosts, 0, Constants.REGION_HEIGHT-1));
-            _flowDirections.Add(Direction.SOUTH, PathFindingService.ComputeFlow(_tileCosts, Constants.REGION_WIDTH / 2, Constants.REGION_HEIGHT-1));
-            _flowDirections.Add(Direction.SOUTH_EAST, PathFindingService.ComputeFlow(_tileCosts, Constants.REGION_WIDTH-1, Constants.REGION_HEIGHT-1));
+            //_flowDirections.Add(Direction.NORTH_WEST, PathFindingService.ComputeFlow(_tileCosts, 0, 0));
+            //_flowDirections.Add(Direction.NORTH, PathFindingService.ComputeFlow(_tileCosts, Constants.REGION_WIDTH / 2, 0));
+            //_flowDirections.Add(Direction.NORTH_EAST, PathFindingService.ComputeFlow(_tileCosts, Constants.REGION_WIDTH-1, 0));
+            //_flowDirections.Add(Direction.EAST, PathFindingService.ComputeFlow(_tileCosts, 0, Constants.REGION_HEIGHT / 2));
+            //_flowDirections.Add(Direction.WEST, PathFindingService.ComputeFlow(_tileCosts, Constants.REGION_WIDTH-1, Constants.REGION_HEIGHT / 2));
+            //_flowDirections.Add(Direction.SOUTH_WEST, PathFindingService.ComputeFlow(_tileCosts, 0, Constants.REGION_HEIGHT-1));
+            //_flowDirections.Add(Direction.SOUTH, PathFindingService.ComputeFlow(_tileCosts, Constants.REGION_WIDTH / 2, Constants.REGION_HEIGHT-1));
+            //_flowDirections.Add(Direction.SOUTH_EAST, PathFindingService.ComputeFlow(_tileCosts, Constants.REGION_WIDTH-1, Constants.REGION_HEIGHT-1));
         }
 
         private void UpdateFlowInRegion()
@@ -160,29 +162,40 @@ namespace DwarfMine.States.StateImplementation.Game.Layers.RegionLayers
                 return;
             }
 
-            if(_flowDirections.ContainsKey(Direction.CENTER))
-            {
-                _flowDirections[Direction.CENTER] = PathFindingService.ComputeFlow(_tileCosts, _destination.Value.X, _destination.Value.Y);
-            }
-            else
-            {
-                _flowDirections.Add(Direction.CENTER, PathFindingService.ComputeFlow(_tileCosts, _destination.Value.X, _destination.Value.Y));
-            }
+            //if(_flowDirections.ContainsKey(Direction.CENTER))
+            //{
+            //    _flowDirections[Direction.CENTER] = PathFindingService.ComputeFlow(_tileCosts, _destination.Value.X, _destination.Value.Y);
+            //}
+            //else
+            //{
+            //    _flowDirections.Add(Direction.CENTER, PathFindingService.ComputeFlow(_tileCosts, _destination.Value.X, _destination.Value.Y));
+            //}
         }
 
         private void CreateTexture()
         {
-            var spriteBatch = new SpriteBatch(GraphicManager.Instance.GraphicsDevice);
+            GraphicsDevice graphicsDevice = null;
+            Texture2D blanktexture = null;
+
+            using (var scope = GameCore.Instance.CreateScope())
+            {
+                var globalService = scope.Resolve<IGlobalService>();
+                var textureService = scope.Resolve<ITextureService>();
+
+                graphicsDevice = globalService.GetGraphicsDevice();
+                blanktexture = textureService.GetTexture("blank");
+            }
+
+
+            var spriteBatch = new SpriteBatch(graphicsDevice);
             var customSpriteBatch = new CustomSpriteBatch(spriteBatch);
-            var renderTarget = new RenderTarget2D(GraphicManager.Instance.GraphicsDevice, Rectangle.Width, Rectangle.Height);
+            var renderTarget = new RenderTarget2D(graphicsDevice, Rectangle.Width, Rectangle.Height);
 
-            GraphicManager.Instance.GraphicsDevice.SetRenderTarget(renderTarget);
+            graphicsDevice.SetRenderTarget(renderTarget);
 
-            GraphicManager.Instance.GraphicsDevice.Clear(Color.Transparent);
+            graphicsDevice.Clear(Color.Transparent);
 
             customSpriteBatch.Begin();
-
-            var blanktexture = TextureManager.Instance.GetTexture("blank");
 
             //if (_tileCosts != null)
             //{
@@ -206,35 +219,35 @@ namespace DwarfMine.States.StateImplementation.Game.Layers.RegionLayers
             //    }
             //}
 
-            if (_flowDirections.ContainsKey(Direction.CENTER))
-            {
-                var flow = _flowDirections[Direction.CENTER];
+            //if (_flowDirections.ContainsKey(Direction.CENTER))
+            //{
+            //    var flow = _flowDirections[Direction.CENTER];
 
-                for (int y = 0; y < Constants.REGION_HEIGHT; y++)
-                {
-                    for (int x = 0; x < Constants.REGION_WIDTH; x++)
-                    {
-                        var direction = flow[x, y];
+            //    for (int y = 0; y < Constants.REGION_HEIGHT; y++)
+            //    {
+            //        for (int x = 0; x < Constants.REGION_WIDTH; x++)
+            //        {
+            //            var direction = flow[x, y];
 
-                        if (direction != Vector2.Zero)
-                        {
-                            var currentPosition = new Vector2(x * Constants.TILE_WIDTH + Constants.TILE_HALF_WIDTH, y * Constants.TILE_HEIGHT + Constants.TILE_HALF_HEIGHT);
-                            var nextPosition = currentPosition + (direction * new Vector2(Constants.TILE_WIDTH, Constants.TILE_HEIGHT) / 2f);
+            //            if (direction != Vector2.Zero)
+            //            {
+            //                var currentPosition = new Vector2(x * Constants.TILE_WIDTH + Constants.TILE_HALF_WIDTH, y * Constants.TILE_HEIGHT + Constants.TILE_HALF_HEIGHT);
+            //                var nextPosition = currentPosition + (direction * new Vector2(Constants.TILE_WIDTH, Constants.TILE_HEIGHT) / 2f);
 
-                            customSpriteBatch.Draw(blanktexture, new Rectangle(
-                                (int)currentPosition.X - 3, (int)currentPosition.Y - 3,
-                                6, 6
-                                ), Color.Orange);
+            //                customSpriteBatch.Draw(blanktexture, new Rectangle(
+            //                    (int)currentPosition.X - 3, (int)currentPosition.Y - 3,
+            //                    6, 6
+            //                    ), Color.Orange);
 
-                            customSpriteBatch.DrawLine(currentPosition, nextPosition, Color.Orange, 2);
-                        }
-                    }
-                }
-            }
+            //                customSpriteBatch.DrawLine(blanktexture, currentPosition, nextPosition, Color.Orange, 2);
+            //            }
+            //        }
+            //    }
+            //}
 
             customSpriteBatch.End();
 
-            GraphicManager.Instance.GraphicsDevice.SetRenderTarget(null);
+            graphicsDevice.SetRenderTarget(null);
 
             _texture = (Texture2D)renderTarget;
 

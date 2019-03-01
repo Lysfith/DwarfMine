@@ -1,5 +1,4 @@
-﻿using DwarfMine.Managers;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using MonoGame.Extended.Sprites;
@@ -9,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DwarfMine.Graphics
+namespace DwarfMine.Core.Graphics
 {
     public class CustomSpriteBatch
     {
@@ -95,48 +94,35 @@ namespace DwarfMine.Graphics
             DrawCallsCount++;
         }
 
-        public void DrawHorizontalLine(Vector2 point1, Vector2 point2, Color color, int thickness)
+        public void DrawHorizontalLine(Texture2D blankTexture, Vector2 point1, Vector2 point2, Color color, int thickness)
         {
             if (point1.Y != point2.Y)
             {
                 return;
             }
 
-            var blankTexture = TextureManager.Instance.GetTexture("blank");
-
             Draw(blankTexture, new Rectangle((int)point1.X, (int)point1.Y, (int)(point2.X - point1.X), thickness), color);
         }
 
-        public void DrawVerticalLine(Vector2 point1, Vector2 point2, Color color, int thickness)
+        public void DrawVerticalLine(Texture2D blankTexture, Vector2 point1, Vector2 point2, Color color, int thickness)
         {
             if (point1.X != point2.X)
             {
                 return;
             }
 
-            var blankTexture = TextureManager.Instance.GetTexture("blank");
-
             Draw(blankTexture, new Rectangle((int)point1.X, (int)point1.Y, thickness, (int)(point2.Y - point1.Y)), color);
         }
 
-        public void DrawLine(Vector2 point, float length, float angle, Color color, float thickness = 1f)
+        public void DrawLine(Texture2D blankTexture, Vector2 point, float length, float angle, Color color, float thickness = 1f)
         {
             var origin = new Vector2(0f, 0f);
             var scale = new Vector2(length, thickness);
-            Draw(TextureManager.Instance.GetTexture("blank"), point, null, color, angle, origin, scale, SpriteEffects.None, 0);
+            Draw(blankTexture, point, null, color, angle, origin, scale, SpriteEffects.None, 0);
         }
 
-        public void DrawLine(Vector2 point1, Vector2 point2, Color color, float thickness = 1f)
+        public void DrawRectangle(Texture2D blankTexture, Rectangle rectangle, int width, Color color)
         {
-            var distance = Vector2.Distance(point1, point2);
-            var angle = (float)Math.Atan2(point2.Y - point1.Y, point2.X - point1.X);
-            DrawLine(point1, distance, angle, color, thickness);
-        }
-
-        public void DrawRectangle(Rectangle rectangle, int width, Color color)
-        {
-            var blankTexture = TextureManager.Instance.GetTexture("blank");
-
             Draw(blankTexture, new Rectangle(rectangle.X, rectangle.Y, rectangle.Width, width), color);
             Draw(blankTexture, new Rectangle(rectangle.X, rectangle.Y, width, rectangle.Height), color);
             Draw(blankTexture, new Rectangle(rectangle.X + rectangle.Width - width, rectangle.Y, width, rectangle.Height), color);

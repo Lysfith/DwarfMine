@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using DwarfMine.Core;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -33,10 +34,10 @@ namespace DwarfMine
 
         protected override void Initialize()
         {
-            var containerBuilder = new ContainerBuilder();
-
-            RegisterDependencies(containerBuilder);
-            Container = containerBuilder.Build();
+            GameCore.Instance.RegisterServices((containerBuilder) =>
+            {
+                RegisterDependencies(containerBuilder);
+            });
 
             base.Initialize();
         }

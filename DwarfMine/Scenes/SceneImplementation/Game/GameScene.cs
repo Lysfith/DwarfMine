@@ -1,5 +1,8 @@
-﻿using DwarfMine.Graphics;
-using DwarfMine.Managers;
+﻿using Autofac;
+using DwarfMine.Core;
+using DwarfMine.Core.Graphics;
+using DwarfMine.Interfaces.Resource;
+using DwarfMine.Interfaces.Util;
 using DwarfMine.Scenes.SceneImplementation.Game;
 using DwarfMine.Scenes.SceneImplementation.Game.Systems;
 using DwarfMine.States.StateImplementation.Game.Layers;
@@ -12,8 +15,6 @@ using MonoGame.Extended;
 using MonoGame.Extended.Entities;
 using MonoGame.Extended.Input.InputListeners;
 using MonoGame.Extended.Sprites;
-using MonoGame.Extended.Tiled;
-using MonoGame.Extended.Tiled.Renderers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,52 +41,62 @@ namespace DwarfMine.States.StateImplementation.Game
 
         public GameScene()
         {
-            _font = AssetManager.Instance.MainFont;
+            
         }
 
         public void Start()
         {
-            var camera = GraphicManager.Instance.Camera;
-            var spritebatch = GraphicManager.Instance.SpriteBatch;
+            using (var scope = GameCore.Instance.CreateScope())
+            {
+                var spriteService = scope.Resolve<ISpriteService>();
+                var fontService = scope.Resolve<IFontService>();
+                var globalService = scope.Resolve<IGlobalService>();
 
-            camera.MinimumZoom = 0.1f;
-            camera.MaximumZoom = 3f;
+                _font = fontService.GetFont("PixelMaster-24");
 
-            camera.LookAt(Vector2.Zero);
+                var camera = globalService.GetCamera();
+                var spritebatch = globalService.GetSpriteBatch();
 
-            _keyboardListener = new KeyboardListener();
-            _keyboardListener.KeyTyped += KeyTyped;
-            _keyboardListener.KeyPressed += KeyPressed;
-            _keyboardListener.KeyReleased += KeyReleased;
+                camera.MinimumZoom = 0.1f;
+                camera.MaximumZoom = 3f;
 
-            _mouseListener = new MouseListener();
-            _mouseListener.MouseClicked += MouseClicked;
-            _mouseListener.MouseDoubleClicked += MouseDoubleClicked;
-            _mouseListener.MouseDown += MouseDown;
-            _mouseListener.MouseDrag += MouseDrag;
-            _mouseListener.MouseDragEnd += MouseDragEnd;
-            _mouseListener.MouseDragStart += MouseDragStart;
-            _mouseListener.MouseMoved += MouseMoved;
-            _mouseListener.MouseUp += MouseUp;
-            _mouseListener.MouseWheelMoved += MouseWheelMoved;
+                camera.LookAt(Vector2.Zero);
 
-            MapSystem.Instance.Load(1, 1);
+                _keyboardListener = new KeyboardListener();
+                _keyboardListener.KeyTyped += KeyTyped;
+                _keyboardListener.KeyPressed += KeyPressed;
+                _keyboardListener.KeyReleased += KeyReleased;
 
-            
+                _mouseListener = new MouseListener();
+                _mouseListener.MouseClicked += MouseClicked;
+                _mouseListener.MouseDoubleClicked += MouseDoubleClicked;
+                _mouseListener.MouseDown += MouseDown;
+                _mouseListener.MouseDrag += MouseDrag;
+                _mouseListener.MouseDragEnd += MouseDragEnd;
+                _mouseListener.MouseDragStart += MouseDragStart;
+                _mouseListener.MouseMoved += MouseMoved;
+                _mouseListener.MouseUp += MouseUp;
+                _mouseListener.MouseWheelMoved += MouseWheelMoved;
 
-            _world = new WorldBuilder()
-                .AddSystem(new SpriteVisibilitySystem(camera))
-                .AddSystem(new SpriteRenderingSystem(spritebatch, camera))
-                .AddSystem(new MovementSystem())
-                .Build();
+                MapSystem.Instance.Load(1, 1);
 
-            _entityFactory = new EntityFactory(_world);
 
-            //entityFactory.SpawnPlayer(100, 100);
 
-            //_characters = new List<Character>();
+                _world = new WorldBuilder()
+                    .AddSystem(new SpriteVisibilitySystem(camera))
+                    .AddSystem(new SpriteRenderingSystem(spritebatch, camera))
+                    .AddSystem(new MovementSystem())
+                    .Build();
 
-            _cellHighlight = SpriteManager.Instance.GetSprite(EnumSprite.SELECT);
+                _entityFactory = new EntityFactory(_world);
+
+                //entityFactory.SpawnPlayer(100, 100);
+
+                //_characters = new List<Character>();
+
+
+                _cellHighlight = spriteService.GetSprite((int)EnumSprite.SELECT);
+            }
             _currentCellScale = new Vector2(1, 1);
         }
 
@@ -140,7 +151,7 @@ namespace DwarfMine.States.StateImplementation.Game
 
         }
 
-       
+
 
         #region Inputs
         private void KeyPressed(object sender, KeyboardEventArgs args)
@@ -160,11 +171,19 @@ namespace DwarfMine.States.StateImplementation.Game
 
         private void MouseClicked(object sender, MouseEventArgs args)
         {
-            if(args.Button == MonoGame.Extended.Input.MouseButton.Left)
+            OrthographicCamera camera = null;
+
+            using (var scope = GameCore.Instance.CreateScope())
+            {
+                var globalService = scope.Resolve<IGlobalService>();
+
+                camera = globalService.GetCamera();
+            }
+
+            if (args.Button == MonoGame.Extended.Input.MouseButton.Left)
             {
                 var mousePositionScreen = args.Position;
-                var camera = GraphicManager.Instance.Camera;
-
+                
                 var mousePositionWorld = camera.ScreenToWorld(mousePositionScreen.X, mousePositionScreen.Y);
 
                 //MapSystem.Instance.AddObject((int)mousePositionWorld.X, (int)mousePositionWorld.Y);
@@ -187,10 +206,9 @@ namespace DwarfMine.States.StateImplementation.Game
                     //_characters.Add(character);
                 }
             }
-            else if(args.Button == MonoGame.Extended.Input.MouseButton.Middle)
+            else if (args.Button == MonoGame.Extended.Input.MouseButton.Middle)
             {
                 var mousePositionScreen = args.Position;
-                var camera = GraphicManager.Instance.Camera;
 
                 var mousePositionWorld = camera.ScreenToWorld(mousePositionScreen.X, mousePositionScreen.Y);
 
@@ -217,9 +235,16 @@ namespace DwarfMine.States.StateImplementation.Game
         {
             if (args.Button == MonoGame.Extended.Input.MouseButton.Right)
             {
-                var distance = args.DistanceMoved;
+                OrthographicCamera camera = null;
 
-                var camera = GraphicManager.Instance.Camera;
+                using (var scope = GameCore.Instance.CreateScope())
+                {
+                    var globalService = scope.Resolve<IGlobalService>();
+
+                    camera = globalService.GetCamera();
+                }
+
+                var distance = args.DistanceMoved;
 
                 camera.Move(-distance / camera.Zoom);
             }
@@ -237,9 +262,17 @@ namespace DwarfMine.States.StateImplementation.Game
 
         private void MouseMoved(object sender, MouseEventArgs args)
         {
-            var mousePositionScreen = args.Position;
-            var camera = GraphicManager.Instance.Camera;
+            OrthographicCamera camera = null;
 
+            using (var scope = GameCore.Instance.CreateScope())
+            {
+                var globalService = scope.Resolve<IGlobalService>();
+
+                camera = globalService.GetCamera();
+            }
+
+            var mousePositionScreen = args.Position;
+            
             var mousePositionWorld = camera.ScreenToWorld(mousePositionScreen.X, mousePositionScreen.Y);
 
             var region = MapSystem.Instance.GetRegion((int)mousePositionWorld.X, (int)mousePositionWorld.Y);
@@ -261,7 +294,14 @@ namespace DwarfMine.States.StateImplementation.Game
 
         private void MouseWheelMoved(object sender, MouseEventArgs args)
         {
-            var camera = GraphicManager.Instance.Camera;
+            OrthographicCamera camera = null;
+
+            using (var scope = GameCore.Instance.CreateScope())
+            {
+                var globalService = scope.Resolve<IGlobalService>();
+
+                camera = globalService.GetCamera();
+            }
 
             if (args.ScrollWheelDelta > 0)
             {
@@ -278,7 +318,7 @@ namespace DwarfMine.States.StateImplementation.Game
             {
                 float value = 1;
 
-                if(camera.Zoom <= 1)
+                if (camera.Zoom <= 1)
                 {
                     value = 0.1f;
                 }

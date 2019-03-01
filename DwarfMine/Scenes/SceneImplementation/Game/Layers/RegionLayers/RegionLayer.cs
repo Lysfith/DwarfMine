@@ -1,4 +1,5 @@
-﻿using DwarfMine.Graphics;
+﻿
+using DwarfMine.Core.Graphics;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;

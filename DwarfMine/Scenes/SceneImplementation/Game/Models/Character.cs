@@ -1,7 +1,11 @@
-﻿using DwarfMine.Graphics;
-using DwarfMine.Managers;
+﻿
+
+using Autofac;
+using DwarfMine.Core;
+using DwarfMine.Core.Graphics;
+using DwarfMine.Interfaces.Resource;
+using DwarfMine.Interfaces.Util;
 using DwarfMine.Scenes.SceneImplementation.Game.Systems;
-using DwarfMine.Services;
 using DwarfMine.States.StateImplementation.Game.Layers.RegionLayers;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
@@ -56,7 +60,14 @@ namespace DwarfMine.States.StateImplementation.Game.Models
         {
             if (_path != null && _path.Any())
             {
-                var sprite = SpriteManager.Instance.GetSprite(EnumSprite.DEV2);
+                Sprite sprite = null;
+
+                using (var scope = GameCore.Instance.CreateScope())
+                {
+                    var spriteService = scope.Resolve<ISpriteService>();
+
+                    sprite = spriteService.GetSprite((int)EnumSprite.DEV2);
+                }
 
                 foreach (var p in _path)
                 {
@@ -87,7 +98,14 @@ namespace DwarfMine.States.StateImplementation.Game.Models
 
             var destinationInRegion = region.GetCellIndexFromWorldPosition(Destination.Value.X, Destination.Value.Y);
 
-            var flows = PathFindingService.ComputeFlow(costs, destinationInRegion.X, destinationInRegion.Y);
+            Vector2[,] flows = null;
+
+            using (var scope = GameCore.Instance.CreateScope())
+            {
+                var flowFieldService = scope.Resolve<IFlowFieldService>();
+
+                flows = flowFieldService.ComputeFlow(costs, destinationInRegion.X, destinationInRegion.Y);
+            }
 
             var positionInRegion = region.GetCellIndexFromWorldPosition(X, Y);
             var positionInWorld = region.GetCellPositionFromWorldPosition(X, Y);

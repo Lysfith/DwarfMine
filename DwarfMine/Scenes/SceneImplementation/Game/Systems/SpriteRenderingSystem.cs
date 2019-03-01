@@ -1,4 +1,5 @@
-﻿using DwarfMine.Graphics;
+﻿
+using DwarfMine.Core.Graphics;
 using DwarfMine.Scenes.SceneImplementation.Game.Components;
 using DwarfMine.States.StateImplementation.Game;
 using Microsoft.Xna.Framework;

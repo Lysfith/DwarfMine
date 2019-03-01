@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using DwarfMine.Graphics;
-using DwarfMine.Managers;
+using Autofac;
+using DwarfMine.Core;
+using DwarfMine.Core.Graphics;
+using DwarfMine.Interfaces.Resource;
+using DwarfMine.Interfaces.Util;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -11,12 +14,12 @@ namespace DwarfMine.States.StateImplementation.Game.Layers.RegionLayers
     public class RegionLayerGrid : RegionLayer
     {
         private Texture2D _texture;
-        private PrimitiveRectangle _cellSprite;
+        //private PrimitiveRectangle _cellSprite;
 
         public RegionLayerGrid(Rectangle rectangle)
             :base(LayerType.GRID, rectangle)
         {
-            _cellSprite = new PrimitiveRectangle(PrimitiveRectangle.Type.OUTLINE, Constants.TILE_WIDTH, Constants.TILE_HEIGHT, TextureManager.Instance.GetTexture("blank"), Color.Transparent, Color.White, 1);
+            //_cellSprite = new PrimitiveRectangle(PrimitiveRectangle.Type.OUTLINE, Constants.TILE_WIDTH, Constants.TILE_HEIGHT, TextureManager.Instance.GetTexture("blank"), Color.Transparent, Color.White, 1);
         }
 
         public override void Update(GameTime time)
@@ -54,13 +57,25 @@ namespace DwarfMine.States.StateImplementation.Game.Layers.RegionLayers
 
         private void CreateTexture()
         {
-            var spriteBatch = new SpriteBatch(GraphicManager.Instance.GraphicsDevice);
+            GraphicsDevice graphicsDevice = null;
+            Texture2D blanktexture = null;
+
+            using (var scope = GameCore.Instance.CreateScope())
+            {
+                var globalService = scope.Resolve<IGlobalService>();
+                var textureService = scope.Resolve<ITextureService>();
+
+                graphicsDevice = globalService.GetGraphicsDevice();
+                blanktexture = textureService.GetTexture("blank");
+            }
+
+            var spriteBatch = new SpriteBatch(graphicsDevice);
             var customSpriteBatch = new CustomSpriteBatch(spriteBatch);
-            var renderTarget = new RenderTarget2D(GraphicManager.Instance.GraphicsDevice, Rectangle.Width, Rectangle.Height);
+            var renderTarget = new RenderTarget2D(graphicsDevice, Rectangle.Width, Rectangle.Height);
 
-            GraphicManager.Instance.GraphicsDevice.SetRenderTarget(renderTarget);
+            graphicsDevice.SetRenderTarget(renderTarget);
 
-            GraphicManager.Instance.GraphicsDevice.Clear(Color.Transparent);
+            graphicsDevice.Clear(Color.Transparent);
 
             customSpriteBatch.Begin();
 
@@ -74,32 +89,30 @@ namespace DwarfMine.States.StateImplementation.Game.Layers.RegionLayers
             //    }
             //}
 
-            var blanktexture = TextureManager.Instance.GetTexture("blank");
-
             for (int y = 0; y <= Constants.REGION_HEIGHT; y++)
             {
 
-                customSpriteBatch.DrawHorizontalLine(new Vector2(0, y * Constants.TILE_HEIGHT), new Vector2(Constants.REGION_WIDTH * Constants.TILE_WIDTH, y * Constants.TILE_HEIGHT), Color.White, 1);
+                customSpriteBatch.DrawHorizontalLine(blanktexture, new Vector2(0, y * Constants.TILE_HEIGHT), new Vector2(Constants.REGION_WIDTH * Constants.TILE_WIDTH, y * Constants.TILE_HEIGHT), Color.White, 1);
 
                 if (y > 0)
                 {
-                    customSpriteBatch.DrawHorizontalLine(new Vector2(0, y * Constants.TILE_HEIGHT-1), new Vector2(Constants.REGION_WIDTH * Constants.TILE_WIDTH, y * Constants.TILE_HEIGHT-1), Color.White, 1);
+                    customSpriteBatch.DrawHorizontalLine(blanktexture, new Vector2(0, y * Constants.TILE_HEIGHT-1), new Vector2(Constants.REGION_WIDTH * Constants.TILE_WIDTH, y * Constants.TILE_HEIGHT-1), Color.White, 1);
                 }
             }
 
             for (int x = 0; x <= Constants.REGION_WIDTH; x++)
             {
-                customSpriteBatch.DrawVerticalLine(new Vector2(x * Constants.TILE_WIDTH, 0), new Vector2(x * Constants.TILE_WIDTH, Constants.REGION_HEIGHT * Constants.TILE_HEIGHT), Color.White, 1);
+                customSpriteBatch.DrawVerticalLine(blanktexture, new Vector2(x * Constants.TILE_WIDTH, 0), new Vector2(x * Constants.TILE_WIDTH, Constants.REGION_HEIGHT * Constants.TILE_HEIGHT), Color.White, 1);
 
                 if (x > 0)
                 {
-                    customSpriteBatch.DrawVerticalLine(new Vector2(x * Constants.TILE_WIDTH-1, 0), new Vector2(x * Constants.TILE_WIDTH-1, Constants.REGION_HEIGHT * Constants.TILE_HEIGHT), Color.White, 1);
+                    customSpriteBatch.DrawVerticalLine(blanktexture, new Vector2(x * Constants.TILE_WIDTH-1, 0), new Vector2(x * Constants.TILE_WIDTH-1, Constants.REGION_HEIGHT * Constants.TILE_HEIGHT), Color.White, 1);
                 }
             }
 
             customSpriteBatch.End();
 
-            GraphicManager.Instance.GraphicsDevice.SetRenderTarget(null);
+            graphicsDevice.SetRenderTarget(null);
 
             _texture = (Texture2D)renderTarget;
 

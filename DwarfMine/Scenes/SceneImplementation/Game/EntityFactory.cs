@@ -1,4 +1,6 @@
-﻿using DwarfMine.Managers;
+﻿using Autofac;
+using DwarfMine.Core;
+using DwarfMine.Interfaces.Resource;
 using DwarfMine.Scenes.SceneImplementation.Game.Components;
 using DwarfMine.States.StateImplementation.Game;
 using MonoGame.Extended;
@@ -20,10 +22,15 @@ namespace DwarfMine.Scenes.SceneImplementation.Game
 
         public void SpawnPlayer(float x, float y)
         {
-            var entity = World.CreateEntity();
-            entity.Attach(SpriteManager.Instance.GetSprite(EnumSprite.DEV));
-            entity.Attach(new Transform2(x, y));
-            entity.Attach(new MovementDestination());
+            using (var scope = GameCore.Instance.CreateScope())
+            {
+                var spriteService = scope.Resolve<ISpriteService>();
+
+                var entity = World.CreateEntity();
+                entity.Attach(spriteService.GetSprite((int)EnumSprite.DEV));
+                entity.Attach(new Transform2(x, y));
+                entity.Attach(new MovementDestination());
+            }
         }
     }
 }

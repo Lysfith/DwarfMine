@@ -1,6 +1,8 @@
-﻿using DwarfMine.Managers;
+﻿
+using Autofac;
+using DwarfMine.Core;
+using DwarfMine.Interfaces.Util;
 using DwarfMine.Scenes.SceneImplementation.Game.Components;
-using DwarfMine.Services;
 using DwarfMine.States.StateImplementation.Game;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
@@ -63,21 +65,26 @@ namespace DwarfMine.Scenes.SceneImplementation.Game.Systems
                     {
                         if (movementDestination.Path == null || !movementDestination.Path.Any())
                         {
-                            movementDestination.JobComputePath = JobManager.Instance.AddJob(() =>
+                            using (var scope = GameCore.Instance.CreateScope())
                             {
-                                movementDestination.Path = CreatePath(positionPoint, movementDestination.Position.Value, movementDestination.Path);
+                                var jobService = scope.Resolve<IJobService>();
 
-                                if (movementDestination.Path.Any())
+                                movementDestination.JobComputePath = jobService.AddJob(() =>
                                 {
-                                    movementDestination.Position = movementDestination.Path.Last();
-                                }
-                                else
-                                {
-                                    movementDestination.Position = null;
-                                }
+                                    movementDestination.Path = CreatePath(positionPoint, movementDestination.Position.Value, movementDestination.Path);
 
-                                movementDestination.JobComputePath = null;
-                            });
+                                    if (movementDestination.Path.Any())
+                                    {
+                                        movementDestination.Position = movementDestination.Path.Last();
+                                    }
+                                    else
+                                    {
+                                        movementDestination.Position = null;
+                                    }
+
+                                    movementDestination.JobComputePath = null;
+                                });
+                            }
                         }
                         else
                         {
@@ -137,7 +144,14 @@ namespace DwarfMine.Scenes.SceneImplementation.Game.Systems
 
             var destinationInRegion = region.GetCellIndexFromWorldPosition(destination.X, destination.Y);
 
-            var flows = PathFindingService.ComputeFlow(costs, destinationInRegion.X, destinationInRegion.Y);
+            Vector2[,] flows = null;
+
+            using (var scope = GameCore.Instance.CreateScope())
+            {
+                var flowFieldService = scope.Resolve<IFlowFieldService>();
+
+                flows = flowFieldService.ComputeFlow(costs, destinationInRegion.X, destinationInRegion.Y);
+            }
 
             var positionInRegion = region.GetCellIndexFromWorldPosition(position.X, position.Y);
             var positionInWorld = region.GetCellPositionFromWorldPosition(position.X, position.Y);
