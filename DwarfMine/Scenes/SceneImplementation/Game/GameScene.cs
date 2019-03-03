@@ -12,6 +12,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
 using MonoGame.Extended;
+using MonoGame.Extended.Animations;
 using MonoGame.Extended.Entities;
 using MonoGame.Extended.Input.InputListeners;
 using MonoGame.Extended.Sprites;
@@ -29,7 +30,7 @@ namespace DwarfMine.States.StateImplementation.Game
         private SpriteFont _font;
         private KeyboardListener _keyboardListener;
         private MouseListener _mouseListener;
-        private Sprite _cellHighlight;
+        private AnimatedSprite _cellHighlight;
         private Point? _currentCellHovered;
         private Vector2 _currentCellScale;
         private float _currentCellTime;
@@ -95,7 +96,8 @@ namespace DwarfMine.States.StateImplementation.Game
                 //_characters = new List<Character>();
 
 
-                _cellHighlight = spriteService.GetSprite((int)EnumSprite.SELECT);
+                _cellHighlight = spriteService.GetAnimatedSprite((int)EnumSpriteAnimated.CURSOR);
+                _cellHighlight.Play("default");
             }
             _currentCellScale = new Vector2(1, 1);
         }
@@ -122,16 +124,18 @@ namespace DwarfMine.States.StateImplementation.Game
 
             MapSystem.Instance.Update(time, camera);
 
-            _currentCellTime += (float)time.ElapsedGameTime.TotalSeconds;
-            _currentCellScale += new Vector2(0.2f * (float)time.ElapsedGameTime.TotalSeconds, 0.2f * (float)time.ElapsedGameTime.TotalSeconds) * _currentCellSign;
+            //_currentCellTime += (float)time.ElapsedGameTime.TotalSeconds;
+            //_currentCellScale += new Vector2(0.2f * (float)time.ElapsedGameTime.TotalSeconds, 0.2f * (float)time.ElapsedGameTime.TotalSeconds) * _currentCellSign;
 
-            if (_currentCellTime >= 1)
-            {
-                _currentCellSign = _currentCellSign * -1;
-                _currentCellTime = 0;
-            }
+            //if (_currentCellTime >= 1)
+            //{
+            //    _currentCellSign = _currentCellSign * -1;
+            //    _currentCellTime = 0;
+            //}
 
             _world.Update(time);
+
+            _cellHighlight.Update(time);
         }
 
         public void Draw(GameTime time, CustomSpriteBatch spriteBatch, OrthographicCamera camera)

@@ -12,6 +12,8 @@ using DwarfMine.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
+using MonoGame.Extended.Animations;
+using MonoGame.Extended.Animations.SpriteSheets;
 using MonoGame.Extended.Sprites;
 using MonoGame.Extended.TextureAtlases;
 using System;
@@ -57,6 +59,9 @@ namespace DwarfMine
 
             textureService.AddTexture($"tiles", Content.Load<Texture2D>("Textures/Game/tiles"));
             textureService.AddTexture($"tiles-2", Content.Load<Texture2D>("Textures/Game/tiles-2"));
+            textureService.AddTexture($"utils", Content.Load<Texture2D>("Textures/Game/utils"));
+            textureService.AddTexture($"objects", Content.Load<Texture2D>("Textures/Game/objects"));
+            textureService.AddTexture($"characters", Content.Load<Texture2D>("Textures/Game/characters"));
 
             builder.RegisterInstance<ITextureService>(textureService);
 
@@ -66,8 +71,6 @@ namespace DwarfMine
 
             spriteService.AddOrReplaceSprite((int)EnumSprite.DEV, new Sprite(new TextureRegion2D(tiles, new Rectangle(0, 0, 32, 32))));
             spriteService.AddOrReplaceSprite((int)EnumSprite.DEV2, new Sprite(new TextureRegion2D(tiles, new Rectangle(32, 0, 32, 32))));
-            spriteService.AddOrReplaceSprite((int)EnumSprite.SELECT, new Sprite(new TextureRegion2D(tiles, new Rectangle(0, 32, 32, 32))));
-
 
             //var outdoors = TextureManager.Instance.GetTexture($"{directory}OutdoorsTileset");
             //AddOrReplaceSprite(EnumSprite.GRASS_INNER_TOP_LEFT, new Sprite(new TextureRegion2D(outdoors, new Rectangle(0, 0, 16, 16))));
@@ -90,6 +93,21 @@ namespace DwarfMine
             spriteService.AddOrReplaceSprite((int)EnumSprite.FLOWER_4, new Sprite(new TextureRegion2D(tiles2, new Rectangle(32 * 3, 96, 32, 32))));
             spriteService.AddOrReplaceSprite((int)EnumSprite.FLOWER_5, new Sprite(new TextureRegion2D(tiles2, new Rectangle(32 * 4, 96, 32, 32))));
             spriteService.AddOrReplaceSprite((int)EnumSprite.FLOWER_6, new Sprite(new TextureRegion2D(tiles2, new Rectangle(32 * 5, 96, 32, 32))));
+
+            var utils = textureService.GetTexture($"utils");
+
+            var animation = new SpriteSheetAnimationFactory(new List<TextureRegion2D>() {
+                new TextureRegion2D(utils, new Rectangle(0, 0, 32, 32)),
+                new TextureRegion2D(utils, new Rectangle(32, 0, 32, 32)),
+                new TextureRegion2D(utils, new Rectangle(32 * 2, 0, 32, 32)),
+                new TextureRegion2D(utils, new Rectangle(32 * 3, 0, 32, 32))
+            });
+
+            animation.Add("default", new SpriteSheetAnimationData(new int[] { 0, 1, 2, 3, 2, 1 }, 0.5f));
+
+            var animatedSprite = new AnimatedSprite(animation);
+
+            spriteService.AddOrReplaceAnimatedSprite((int)EnumSpriteAnimated.CURSOR, animatedSprite);
 
             builder.RegisterInstance<ISpriteService>(spriteService);
 

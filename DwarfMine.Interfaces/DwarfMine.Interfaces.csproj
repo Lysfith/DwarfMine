@@ -23,6 +23,9 @@
     <Reference Include="MonoGame.Extended">
       <HintPath>..\Libs\MonoGame.Extended.dll</HintPath>
     </Reference>
+    <Reference Include="MonoGame.Extended.Animations">
+      <HintPath>..\Libs\MonoGame.Extended.Animations.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
