@@ -81,8 +81,6 @@ namespace DwarfMine.States.StateImplementation.Game
 
                 MapSystem.Instance.Load(1, 1);
 
-
-
                 _world = new WorldBuilder()
                     .AddSystem(new SpriteVisibilitySystem(camera))
                     .AddSystem(new SpriteRenderingSystem(spritebatch, camera))
@@ -90,6 +88,23 @@ namespace DwarfMine.States.StateImplementation.Game
                     .Build();
 
                 _entityFactory = new EntityFactory(_world);
+
+                var random = new Random();
+
+                for (int i = 0; i < Constants.REGION_WIDTH * Constants.REGION_HEIGHT * 0.1f; i++)
+                {
+                    int x = random.Next(0, Constants.REGION_WIDTH * Constants.TILE_WIDTH);
+                    int y = random.Next(0, Constants.REGION_HEIGHT * Constants.TILE_HEIGHT);
+
+                    var region = MapSystem.Instance.GetRegion(x, y);
+                    var cellIndex = region.GetCellIndexFromWorldPosition(x, y);
+                    var isFree = !region.GetCollision(cellIndex.X, cellIndex.Y);
+
+                    if (isFree)
+                    {
+                        _entityFactory.SpawnRock1(cellIndex.X * Constants.TILE_WIDTH + Constants.TILE_HALF_WIDTH, cellIndex.Y * Constants.TILE_HEIGHT + Constants.TILE_HALF_HEIGHT);
+                    }
+                }
 
                 //entityFactory.SpawnPlayer(100, 100);
 

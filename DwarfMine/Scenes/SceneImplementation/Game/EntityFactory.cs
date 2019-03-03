@@ -27,9 +27,33 @@ namespace DwarfMine.Scenes.SceneImplementation.Game
                 var spriteService = scope.Resolve<ISpriteService>();
 
                 var entity = World.CreateEntity();
-                entity.Attach(spriteService.GetSprite((int)EnumSprite.DEV));
+                entity.Attach(spriteService.GetSprite((int)EnumSprite.CHARACTER_1));
                 entity.Attach(new Transform2(x, y));
                 entity.Attach(new MovementDestination());
+            }
+        }
+
+        public void SpawnRock1(float x, float y)
+        {
+            using (var scope = GameCore.Instance.CreateScope())
+            {
+                var spriteService = scope.Resolve<ISpriteService>();
+
+                var entity = World.CreateEntity();
+                entity.Attach(spriteService.GetSprite((int)EnumSprite.ROCK_1));
+                entity.Attach(new Transform2(x, y));
+            }
+        }
+
+        public void SpawnTree1(float x, float y)
+        {
+            using (var scope = GameCore.Instance.CreateScope())
+            {
+                var spriteService = scope.Resolve<ISpriteService>();
+
+                var entity = World.CreateEntity();
+                entity.Attach(spriteService.GetSprite((int)EnumSprite.TREE_1));
+                entity.Attach(new Transform2(x, y));
             }
         }
     }

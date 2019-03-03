@@ -48,13 +48,13 @@ namespace DwarfMine.Scenes.SceneImplementation.Game.Systems
                 }
             }
 
-            for (int i = 0; i < width * Constants.REGION_WIDTH * height * Constants.REGION_HEIGHT * 0.2f; i++)
-            {
-                int x = _random.Next(0, width * Constants.REGION_WIDTH * Constants.TILE_WIDTH);
-                int y = _random.Next(0, height * Constants.REGION_HEIGHT * Constants.TILE_HEIGHT);
+            //for (int i = 0; i < width * Constants.REGION_WIDTH * height * Constants.REGION_HEIGHT * 0.2f; i++)
+            //{
+            //    int x = _random.Next(0, width * Constants.REGION_WIDTH * Constants.TILE_WIDTH);
+            //    int y = _random.Next(0, height * Constants.REGION_HEIGHT * Constants.TILE_HEIGHT);
 
-                AddObject(x, y);
-            }
+            //    AddObject(x, y);
+            //}
 
             _map.Loaded();
         }

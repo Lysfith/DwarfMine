@@ -94,6 +94,14 @@ namespace DwarfMine
             spriteService.AddOrReplaceSprite((int)EnumSprite.FLOWER_5, new Sprite(new TextureRegion2D(tiles2, new Rectangle(32 * 4, 96, 32, 32))));
             spriteService.AddOrReplaceSprite((int)EnumSprite.FLOWER_6, new Sprite(new TextureRegion2D(tiles2, new Rectangle(32 * 5, 96, 32, 32))));
 
+            var objects = textureService.GetTexture($"objects");
+
+            spriteService.AddOrReplaceSprite((int)EnumSprite.ROCK_1, new Sprite(new TextureRegion2D(objects, new Rectangle(0, 0, 32, 32))));
+
+            var characters = textureService.GetTexture($"characters");
+
+            spriteService.AddOrReplaceSprite((int)EnumSprite.CHARACTER_1, new Sprite(new TextureRegion2D(characters, new Rectangle(0, 0, 32, 32))));
+
             var utils = textureService.GetTexture($"utils");
 
             var animation = new SpriteSheetAnimationFactory(new List<TextureRegion2D>() {
